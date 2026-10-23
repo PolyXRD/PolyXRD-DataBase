@@ -173,8 +173,13 @@ python tools/verify_polydb.py polydb/COD-Full-20261021.polyDB --no-hash       # 
 > `tools/` 里仍留有旧格式链路的脚本作为**只读存档**（口径与 polyDB 不同，勿混用，
 > 详见 [`tools/README.md`](tools/README.md) C 组）。构建 polyDB 只需要 A 组 7 个脚本。
 
-不入仓的目录（`.gitignore` 已排除）：`COD/ PCOD/ TCOD/ inorg_cif/ polydb/ xindb/`、
+不入仓的目录（`.gitignore` 已排除）：`COD/ PCOD/ TCOD/ inorg_cif/ polydb/`、
 `*.sqlite`、`_polydb_parts/`、`_scan_parts/`。
+
+> **xinDB 已迁出**（2026-10-23）：三个 `.xinDB` 从本仓库的 `xindb/` 移到姊妹仓库
+> [XinMatch-DataBase](https://github.com/PolyXRD/XinMatch-DataBase) 的 `data/`，
+> 构建代码与工具也一并归到那边。本仓库只负责 **polyDB**；`inorg_cif/` 与
+> `inorg_manifest.sqlite` 两库共用，仍放在这里。
 
 ---
 

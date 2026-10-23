@@ -4,7 +4,6 @@ PCOD/
 TCOD/
 inorg_cif/
 polydb/
-xindb/
 
 # ── 构建中间件 ──────────────────────────────────────────────
 _polydb_parts/
