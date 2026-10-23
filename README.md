@@ -155,7 +155,7 @@ python tools/verify_polydb.py polydb/COD-Full-20261021.polyDB --no-hash       # 
 │   ├── build_polydb.py              polyDB 构建器（主入口）
 │   ├── fastcif.py                   快速 CIF 解析 + 对称展开
 │   ├── fastxrd.py                   峰位/强度计算（无温度因子，pymatgen 口径）
-│   ├── build_dbs.py                 化学式/元素解析、无机判定（旧 3COD 打包器一并存放）
+│   ├── build_dbs.py                 化学式/元素解析、无机判定
 │   ├── scan_inorg.py                三库无机分类扫描 + 清单 inorg_manifest.sqlite
 │   ├── verify_polydb.py             结构/校验和校验器（本仓库新增）
 │   └── bench_polydb_pilot.py        小样本试产：单条耗时 / 峰数分布 / 与旧库峰位 parity
@@ -165,9 +165,12 @@ python tools/verify_polydb.py polydb/COD-Full-20261021.polyDB --no-hash       # 
     └── bench/                       建库报告与基准 JSON（含 Inorg 全链路实测）
 ```
 
-> `tools/` 里同时存档了 COD/PCOD/TCOD 的同步脚本与旧 3COD `.sqlite` 打包器
-> （**非本次发布产物**，口径与 polyDB 不同，勿混用）。按组查阅见
-> [`tools/README.md`](tools/README.md)。
+> **格式收敛（2026-10-23）**：数据库格式只保留两种 —— 本仓库的 **polyDB**（PolyXRD 外挂库）
+> 与 **xinDB**（XinMatch 原生库）。早期的 3COD `.sqlite` 单体库及其打包规范、参考实现
+> （原 `sync-COD-pack/`）**已废弃并从仓库移除**，不再维护、不再分发。
+>
+> `tools/` 里仍留有旧格式链路的脚本作为**只读存档**（口径与 polyDB 不同，勿混用，
+> 详见 [`tools/README.md`](tools/README.md) C 组）。构建 polyDB 只需要 A 组 7 个脚本。
 
 不入仓的目录（`.gitignore` 已排除）：`COD/ PCOD/ TCOD/ inorg_cif/ polydb/ xindb/`、
 `*.sqlite`、`_polydb_parts/`、`_scan_parts/`。
@@ -200,3 +203,4 @@ python tools/verify_polydb.py polydb/COD-Full-20261021.polyDB --no-hash       # 
 |---|---|
 | 2026-10-21 | polyDB v1 格式定稿；`COD-Inorg` / `COD-Full` 两库建成 |
 | 2026-10-23 | 本仓库建立并发布 `20261021` release（代码 + 两库 zip） |
+| 2026-10-23 | 格式收敛：移除旧 3COD `.sqlite` 打包规范与参考代码（`sync-COD-pack/`）；此后只保留 **polyDB** 与 **xinDB** |

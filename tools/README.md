@@ -32,14 +32,16 @@ python tools/verify_polydb.py polydb/COD-Inorg-20261021.polyDB
 | `disk_audit.py` / `recycle_audit.py` | 容量盘点（含回收站真实占用） |
 | `probe_remote.sh` | 到 COD 站点的连通性/并发探测 |
 
-## C. 旧格式（3COD sqlite）打包与验收
+## C. 旧格式（3COD sqlite）—— **已废弃，仅存档**
 
 `build_3cod.py`（全量+无机）、`build_3cod_org.py`（有机物差集）、`split_3cod.py`（分片）、
 `accept_3cod.py` / `accept_3cod_org.py`（成品质检）、`report_pack_accept.py` /
 `report_accept_formal.py`（验收报告）、`probe_two_projects.py`（PolyXRD / XinMatch 双向探测）。
 
 > 这套产出的是 `.sqlite` 单体库（Full 28 GiB / Inorg 19 GiB），与 polyDB 口径不同
-> （旧库 500 峰、按 d 降序、无 d 截止）。**不属于当前发布产物**，仅存档。
+> （旧库 500 峰、按 d 降序、无 d 截止）。**2026-10-23 起格式只保留 polyDB 与 xinDB**，
+> 本组脚本不再维护、不再使用，对应的打包规范与参考实现（原 `sync-COD-pack/`）已从仓库移除；
+> 留在这里只为读懂历史产物的来路。
 
 ## D. 一次性诊断/复核（可读性差，按需参考）
 
