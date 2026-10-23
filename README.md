@@ -166,8 +166,9 @@ python tools/verify_polydb.py polydb/COD-Full-20261021.polyDB --no-hash       # 
 ```
 
 > **格式收敛（2026-10-23）**：数据库格式只保留两种 —— 本仓库的 **polyDB**（PolyXRD 外挂库）
-> 与 **xinDB**（XinMatch 原生库）。早期的 3COD `.sqlite` 单体库及其打包规范、参考实现
-> （原 `sync-COD-pack/`）**已废弃并从仓库移除**，不再维护、不再分发。
+> 与 **xinDB**（XinMatch 原生库，见姊妹仓库
+> [XinMatch-DataBase](https://github.com/PolyXRD/XinMatch-DataBase)）。早期的 3COD `.sqlite`
+> 单体库及其打包规范、参考实现（原 `sync-COD-pack/`）**已废弃并从仓库移除**，不再维护、不再分发。
 >
 > `tools/` 里仍留有旧格式链路的脚本作为**只读存档**（口径与 polyDB 不同，勿混用，
 > 详见 [`tools/README.md`](tools/README.md) C 组）。构建 polyDB 只需要 A 组 7 个脚本。
