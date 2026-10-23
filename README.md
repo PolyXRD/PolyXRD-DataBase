@@ -157,22 +157,22 @@ python tools/verify_polydb.py polydb/COD-Full-20261021.polyDB --no-hash       # 
 ```
 .
 ├── _atomic_scattering_params.json   Cromer-Mann 系数（pymatgen 同一份数据，99 元素）
-├── tools/                           只保留 polyDB 最新格式链路，索引见 tools/README.md
+├── tools/                           只保留 polyDB 构建与产物验收，索引见 tools/README.md
 │   ├── build_polydb.py              polyDB 构建器（主入口）
 │   ├── scan_inorg.py                三库无机分类扫描 + 清单 inorg_manifest.sqlite
 │   ├── cif_common.py                共用纯函数（化学式/无机判定/晶胞体积/摩尔质量）
 │   ├── fastcif.py                   快速 CIF 解析 + 对称展开
 │   ├── fastxrd.py                   峰位/强度计算（无温度因子，pymatgen 口径）
-│   ├── verify_polydb.py             polyDB 结构 32 项验收器
-│   ├── verify_data_root.py          数据根完整性（清单基线 + 抽样比对字节数）
-│   ├── verify_inorg_copy.py         inorg_cif 副本 vs 清单逐条一致
-│   ├── verify_coverage.py           源库/副本/清单三方覆盖度
-│   └── sync/                        与 COD 官方同步（README 已标停用）
+│   └── verify_polydb.py             polyDB 结构 32 项验收器
 └── docs/
     ├── 外挂库格式规范-polyDB-v1.md   字段级规范（容器/峰口径/各段/reader 契约）
     ├── polyDB重建方案-20261021.md   设计取舍、13 试样消融、A/B 比对
     └── bench/                       建库报告与基准 JSON（含 Inorg 全链路实测）
 ```
+
+数据根另有自己的工具目录 `<数据根>/tools/`（**不在本仓库**）：数据验收 3 个
+（`verify_data_root` / `verify_inorg_copy` / `verify_coverage`）+ 同步 10 个（停用）。
+分界是"验数据"还是"验产物"——前者跟着数据走，后者跟着构建代码走。
 
 > **格式收敛（2026-10-23）**：数据库格式只保留两种 —— 本仓库的 **polyDB**（PolyXRD 外挂库）
 > 与 **xinDB**（XinMatch 原生库，见姊妹仓库
@@ -217,5 +217,6 @@ python tools/verify_polydb.py polydb/COD-Full-20261021.polyDB --no-hash       # 
 | 2026-10-23 | 本仓库建立并发布 `20261021` release（代码 + 两库 zip） |
 | 2026-10-23 | 格式收敛：移除旧 3COD `.sqlite` 打包规范与参考代码（`sync-COD-pack/`）；此后只保留 **polyDB** 与 **xinDB** |
 | 2026-10-23 | **源数据迁出仓库** → `D:/Project/XRD/sync-COD`（`COD/ PCOD/ TCOD/ inorg_cif/ inorg_manifest.sqlite`，两库共用），全部脚本改走 `XRD_DATA_ROOT` |
-| 2026-10-23 | **代码收敛**：`tools/` 从 92 个脚本收到 9 个，旧格式构建/验收与一次性诊断全部删除；同步脚本移入 `tools/sync/` 并标停用 |
+| 2026-10-23 | **代码收敛**：`tools/` 从 92 个脚本收到 6 个，旧格式构建/验收与一次性诊断全部删除 |
+| 2026-10-23 | 同步 10 个 + 数据验收 3 个脚本移出仓库，落到 `<数据根>/tools/`（同步部分停用）；仓库只留构建链与产物验收 |
 | 2026-10-23 | 补 `formula_mass()`（IUPAC 原子量），修好 `density` 全 NULL 缺陷（下次重建生效） |

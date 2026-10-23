@@ -1,10 +1,10 @@
 # tools/ 索引
 
 2026-10-23 大幅收敛：**只保留 polyDB 最新格式链路**。旧 3COD `.sqlite` 单体库的构建、
-验收、一次性诊断与报告生成脚本已成批删除（git 历史里仍可找回）；与 COD 官方同步相关
-的脚本移入 [`sync/`](sync/README.md)，当前**停用**。
+验收、一次性诊断与报告生成脚本已成批删除（git 历史里仍可找回）；同步与数据验收脚本
+移出本仓库，落到数据根 `<数据根>/tools/`（同步部分当前**停用**）。
 
-现在 `tools/` 一共 9 个 Python 脚本 + 2 份文档。
+现在 `tools/` 一共 **6 个 Python 脚本 + 2 份文档**：构建链 5 个 + 产物验收 1 个。
 
 ## 数据根（重要）
 
@@ -38,24 +38,34 @@ python tools/build_polydb.py --scope inorg --workers 8
 python tools/build_polydb.py --scope full  --workers 8
 ```
 
-## B. 验收门禁
+## B. 产物验收门禁
 
 | 脚本 | 判据 |
 |---|---|
 | `verify_polydb.py` | polyDB 结构 32 项硬判据（段齐全/字节数/sha256/shape 自洽/sites_off 单调/`integrity_check`/`row_idx` 完整排列/抽样行序）—— **发布前必过** |
-| `verify_data_root.py` | 数据根完整性：清单行数基线 + 每库抽样 250 个归档与副本，比对字节数 |
-| `verify_inorg_copy.py` | `inorg_cif` 副本 vs 清单逐条一致（缺/多/尺寸不符三项须全 0） |
-| `verify_coverage.py` | 源库 CIF / 无机副本 / 清单 三方对照（"有没有漏条目"） |
 
 ```bash
 python tools/verify_polydb.py polydb/COD-Inorg-20261021.polyDB
-python tools/verify_data_root.py
 ```
 
-## C. sync/ —— 与 COD 官方同步（停用）
+> **数据侧的验收不在这里**：清单行数基线、`inorg_cif` 副本一致性、三方覆盖度
+> 三个脚本（`verify_data_root.py` / `verify_inorg_copy.py` / `verify_coverage.py`）
+> 已随同步脚本一起迁到数据根 `<数据根>/tools/`，见
+> [`sync-COD/tools/README.md`](../../sync-COD/tools/README.md)。
+> 分界理由：它们验的是"数据本身"（会被两个仓库共用），
+> 而 `verify_polydb.py` 验的是"本仓库的构建产物"。
 
-见 [`sync/README.md`](sync/README.md)。10 个脚本，含清单抓取、补齐、对账。
-**当前不参与构建**，也不会被任何构建脚本导入。
+## C. 同步与数据验收（已迁到数据根）
+
+2026-10-23 把 13 个脚本移出本仓库，落到 `<数据根>/tools/`：
+
+- 同步 10 个（`fetch_remote_inv` / `crawl_tcod_http` / `make_local_inv` / `cmp_inv` /
+  `fetch_tcod_http` / `fetch_missing_tcod` / `audit_tcod_inv` / `diff_tcod_inv` /
+  `verify_sync_tcod` / `probe_remote.sh`）—— **当前停用**
+- 数据验收 3 个（`verify_data_root` / `verify_inorg_copy` / `verify_coverage`）
+
+理由：这些脚本只操作数据（清单 / 副本 / 归档），不碰 polyDB；数据由两个仓库共用，
+脚本跟着数据走才不会出现"两份代码各自漂移"。索引见该目录的 README。
 
 ## 已删除的东西（2026-10-23）
 
