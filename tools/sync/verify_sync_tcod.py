@@ -100,7 +100,8 @@ def walk_local(root: str) -> set[str]:
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--root", default="E:/rsync-COD")
+    ap.add_argument("--root",
+                    default=os.environ.get("XRD_DATA_ROOT") or r"D:/Project/XRD/sync-COD")
     ap.add_argument("--logs", default="sync_logs/tcod_par_*.log")
     ap.add_argument("--show", type=int, default=30)
     args = ap.parse_args()
@@ -110,7 +111,11 @@ def main() -> int:
     if not paths:
         print(f"没有匹配到日志: {logdir}")
         return 1
-    root_prefix = "/e/rsync-COD/TCOD/"
+    # 日志里的 URL 路径形如 /e/rsync-COD/TCOD/...，由 --root 反推盘符与目录名，
+    # 不再硬编码 E:（换盘就失效）。
+    drive, tail = os.path.splitdrive(os.path.abspath(args.root))
+    drive = drive.rstrip(":") or "e"
+    root_prefix = "/%s/%s/TCOD/" % (drive.lower(), os.path.basename(tail.rstrip("\\/")) or "")
 
     print(f"解析 {len(paths)} 份日志 ...")
     remote, truncated, err403, per_log = parse_logs(paths, root_prefix)

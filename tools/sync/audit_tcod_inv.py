@@ -27,7 +27,8 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 import crawl_tcod_http as C  # noqa: E402
 
-BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# 数据根（2026-10-23 起在仓库外）；sync_logs 随数据根一起放。
+BASE = os.environ.get("XRD_DATA_ROOT") or r"D:/Project/XRD/sync-COD"
 SD = os.path.join(BASE, "sync_logs", "sync20261019")
 
 

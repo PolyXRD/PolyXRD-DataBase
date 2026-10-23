@@ -48,7 +48,8 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--list", required=True)
     ap.add_argument("--remote-inv", required=True)
-    ap.add_argument("--root", default="D:/Project/XRD/PolyXRD-DataBase")
+    ap.add_argument("--root",
+                    default=os.environ.get("XRD_DATA_ROOT") or r"D:/Project/XRD/sync-COD")
     ap.add_argument("--delay", type=float, default=0.05,
                     help="每个文件之间的固定间隔秒数（默认 0.05，别把服务端打爆）")
     ap.add_argument("--abort-after", type=int, default=15,

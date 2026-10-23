@@ -18,6 +18,10 @@
     python tools/build_polydb.py --scope inorg --workers 8
     python tools/build_polydb.py --scope full  --workers 8
     python tools/build_polydb.py --scope inorg --limit 5000 --out D:/tmp/test.polyDB
+
+源数据默认在 ``D:/Project/XRD/sync-COD``（内含 ``COD/`` 与
+``inorg_manifest.sqlite``），可用环境变量 ``XRD_DATA_ROOT`` 覆盖。
+产物默认写到本仓库的 ``polydb/``。
 """
 from __future__ import annotations
 
@@ -39,10 +43,18 @@ os.environ.setdefault("MKL_NUM_THREADS", "1")
 
 import numpy as np  # noqa: E402
 
-BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-MANIFEST = os.path.join(BASE, "inorg_manifest.sqlite")
-COD_DIR = os.path.join(BASE, "COD")
-PARTS_ROOT = os.path.join(BASE, "_polydb_parts")
+# ── 路径约定 ────────────────────────────────────────────────
+# 代码与产物留在本仓库（polydb/、_polydb_parts/）；**源数据在仓库外**：
+# COD/ 归档与 inorg_manifest.sqlite 清单由 PolyXRD / XinMatch 两库共用，
+# 2026-10-23 起统一放在 `D:/Project/XRD/sync-COD`。
+# 换机器或换盘时用环境变量覆盖：XRD_DATA_ROOT=<数据根>
+REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+DATA_ROOT = os.environ.get("XRD_DATA_ROOT") or r"D:\Project\XRD\sync-COD"
+MANIFEST = os.path.join(DATA_ROOT, "inorg_manifest.sqlite")
+COD_DIR = os.path.join(DATA_ROOT, "COD")
+PARTS_ROOT = os.path.join(REPO_ROOT, "_polydb_parts")
+#: 产物默认落点（仓库内 polydb/）
+POLYDB_DIR = os.path.join(REPO_ROOT, "polydb")
 
 FORMAT_NAME = "polyDB"
 SCHEMA_VERSION = 1
@@ -94,7 +106,7 @@ _W = {}
 
 def _init_worker() -> None:
     """worker 进程初始化：导入重模块 + 原子散射参数。"""
-    import build_dbs as B  # noqa: F401
+    import cif_common as B  # noqa: F401
     import fastxrd as FX  # noqa: F401
     from fastcif import parse_cif, expand_sites  # noqa: F401
     _W["B"] = B
@@ -576,7 +588,7 @@ def main(argv=None) -> int:
     variant = "cod-inorg" if args.scope == "inorg" else "cod-full"
     stamp = datetime.now().strftime("%Y%m%d")
     out_dir = args.out or os.path.join(
-        BASE, "polydb", "COD-%s-%s.polyDB" % ("Inorg" if args.scope == "inorg" else "Full", stamp))
+        POLYDB_DIR, "COD-%s-%s.polyDB" % ("Inorg" if args.scope == "inorg" else "Full", stamp))
     parts_dir = os.path.join(PARTS_ROOT, variant)
     if args.force and os.path.isdir(parts_dir):
         shutil.rmtree(parts_dir)

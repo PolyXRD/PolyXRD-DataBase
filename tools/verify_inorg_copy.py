@@ -17,7 +17,8 @@ import os
 import sqlite3
 import sys
 
-BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# 数据根（仓库外）：2026-10-23 起统一在 D:/Project/XRD/sync-COD，可用 XRD_DATA_ROOT 覆盖。
+BASE = os.environ.get("XRD_DATA_ROOT") or r"D:\Project\XRD\sync-COD"
 MANIFEST = os.path.join(BASE, "inorg_manifest.sqlite")
 INORG = os.path.join(BASE, "inorg_cif")
 

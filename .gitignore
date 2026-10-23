@@ -1,8 +1,13 @@
-# ── 数据本体：绝不入仓（体积 100+ GB / 200 万文件）─────────────────
+# ── 数据本体：绝不入仓 ──────────────────────────────────────────
+# 2026-10-23 起源数据已迁出本仓库，统一放 D:/Project/XRD/sync-COD
+# （COD/ PCOD/ TCOD/ inorg_cif/ inorg_manifest.sqlite，约 120 GB / 200 万文件），
+# 与 XinMatch-DataBase 共用。下面的规则是"万一有人把数据放回仓库"的保险。
 COD/
 PCOD/
 TCOD/
 inorg_cif/
+inorg_manifest.sqlite
+# 产物目录（仍在本仓库，只有 index/源码入仓，polyDB 本体不入）
 polydb/
 
 # ── 构建中间件 ──────────────────────────────────────────────

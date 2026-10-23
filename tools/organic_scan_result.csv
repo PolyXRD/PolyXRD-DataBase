@@ -1,4 +1,0 @@
-﻿库,抽样文件数,叶子目录总数,_chemical_formula_sum覆盖率%,_chemical_name_common覆盖率%,_chemical_name_systematic覆盖率%,_chemical_compound_source覆盖率%,organic(有机物)%,organometallic/有机盐%,carbon-inorganic(无机碳)%,inorganic(含H无机物)%,inorganic(无机物)%,unknown(无formula)%
-COD,4520,5921,99.85,11.13,46.59,6.04,33.52,50.02,0.88,3.5,11.92,0.15
-PCOD,2988,159,100.0,0.27,0.0,0.0,0.0,0.0,0.0,0.0,100.0,0.0
-TCOD,2450,581,100.0,1.02,1.1,0.9,49.55,18.16,3.31,2.61,26.37,0.0

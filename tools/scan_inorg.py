@@ -39,9 +39,11 @@ from multiprocessing import Pool
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 os.environ.setdefault("OMP_NUM_THREADS", "1")
 
-import build_dbs as B  # noqa: E402
+import cif_common as B  # noqa: E402
 
-BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# 数据根：COD/PCOD/TCOD 归档 + inorg_cif 副本 + inorg_manifest.sqlite 都放这里。
+# 2026-10-23 起统一在 `D:/Project/XRD/sync-COD`（两库共用），可用 XRD_DATA_ROOT 覆盖。
+BASE = os.environ.get("XRD_DATA_ROOT") or r"D:\Project\XRD\sync-COD"
 PARTS = os.path.join(BASE, "_scan_parts")
 MANIFEST = os.path.join(BASE, "inorg_manifest.sqlite")
 

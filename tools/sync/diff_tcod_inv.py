@@ -22,7 +22,8 @@ import argparse
 import os
 import sys
 
-BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# 数据根（2026-10-23 起在仓库外）；TCOD 归档与 sync_logs 都在其下。
+BASE = os.environ.get("XRD_DATA_ROOT") or r"D:/Project/XRD/sync-COD"
 
 
 def main() -> int:

@@ -90,15 +90,21 @@ pip install numpy
 
 ### 3.2 准备 COD 数据
 
-代码不下载数据。按 COD 官方方式获取 CIF 后，摆成如下布局（目录名固定）：
+代码不下载数据。**源数据不在本仓库**：2026-10-23 起源数据迁出，统一放在
 
 ```
-<data-root>/
-├── COD/                     # 必需：COD 的 CIF（层级 3，如 COD/1/00/00/1000000.cif）
-├── PCOD/                    # 可选：本仓库脚本支持，但 polyDB 发布版只用 COD
-├── TCOD/                    # 可选
-├── inorg_manifest.sqlite    # 由 tools/scan_inorg.py 生成
-└── _atomic_scattering_params.json
+D:/Project/XRD/sync-COD/          ← 数据根，PolyXRD / XinMatch 两库共用
+├── COD/                    必需：COD 的 CIF（3 级布局，如 COD/1/00/00/1000000.cif）
+├── PCOD/                   可选：本仓库脚本支持，但 polyDB 发布版只用 COD
+├── TCOD/                   可选
+├── inorg_cif/{COD,PCOD,TCOD}/   无机子集副本（由 scan_inorg.py 生成）
+└── inorg_manifest.sqlite        逐条清单（由 scan_inorg.py 生成）
+```
+
+换盘或换机器时用环境变量覆盖，不必改代码：
+
+```bash
+export XRD_DATA_ROOT=/path/to/sync-COD
 ```
 
 生成清单（无机判定 + 统一编号 + 每文件一行）：
@@ -151,14 +157,17 @@ python tools/verify_polydb.py polydb/COD-Full-20261021.polyDB --no-hash       # 
 ```
 .
 ├── _atomic_scattering_params.json   Cromer-Mann 系数（pymatgen 同一份数据，99 元素）
-├── tools/                           构建/同步/验收脚本全集，索引见 tools/README.md
+├── tools/                           只保留 polyDB 最新格式链路，索引见 tools/README.md
 │   ├── build_polydb.py              polyDB 构建器（主入口）
+│   ├── scan_inorg.py                三库无机分类扫描 + 清单 inorg_manifest.sqlite
+│   ├── cif_common.py                共用纯函数（化学式/无机判定/晶胞体积/摩尔质量）
 │   ├── fastcif.py                   快速 CIF 解析 + 对称展开
 │   ├── fastxrd.py                   峰位/强度计算（无温度因子，pymatgen 口径）
-│   ├── build_dbs.py                 化学式/元素解析、无机判定
-│   ├── scan_inorg.py                三库无机分类扫描 + 清单 inorg_manifest.sqlite
-│   ├── verify_polydb.py             结构/校验和校验器（本仓库新增）
-│   └── bench_polydb_pilot.py        小样本试产：单条耗时 / 峰数分布 / 与旧库峰位 parity
+│   ├── verify_polydb.py             polyDB 结构 32 项验收器
+│   ├── verify_data_root.py          数据根完整性（清单基线 + 抽样比对字节数）
+│   ├── verify_inorg_copy.py         inorg_cif 副本 vs 清单逐条一致
+│   ├── verify_coverage.py           源库/副本/清单三方覆盖度
+│   └── sync/                        与 COD 官方同步（README 已标停用）
 └── docs/
     ├── 外挂库格式规范-polyDB-v1.md   字段级规范（容器/峰口径/各段/reader 契约）
     ├── polyDB重建方案-20261021.md   设计取舍、13 试样消融、A/B 比对
@@ -170,29 +179,26 @@ python tools/verify_polydb.py polydb/COD-Full-20261021.polyDB --no-hash       # 
 > [XinMatch-DataBase](https://github.com/PolyXRD/XinMatch-DataBase)）。早期的 3COD `.sqlite`
 > 单体库及其打包规范、参考实现（原 `sync-COD-pack/`）**已废弃并从仓库移除**，不再维护、不再分发。
 >
-> `tools/` 里仍留有旧格式链路的脚本作为**只读存档**（口径与 polyDB 不同，勿混用，
-> 详见 [`tools/README.md`](tools/README.md) C 组）。构建 polyDB 只需要 A 组 7 个脚本。
+> 2026-10-23 同时做了代码收敛：旧格式构建/验收机与一次性诊断脚本（50 个）已删除，
+> 只留 9 个脚本；需要考古时查 git 历史。
 
-不入仓的目录（`.gitignore` 已排除）：`COD/ PCOD/ TCOD/ inorg_cif/ polydb/`、
-`*.sqlite`、`_polydb_parts/`、`_scan_parts/`。
+**数据不在仓库内**（`.gitignore` 也排除了 `COD/ PCOD/ TCOD/ inorg_cif/ inorg_manifest.sqlite`，
+以防有人误放回来）。仓库内唯一被忽略的产物目录是 `polydb/`。
 
 > **xinDB 已迁出**（2026-10-23）：三个 `.xinDB` 从本仓库的 `xindb/` 移到姊妹仓库
 > [XinMatch-DataBase](https://github.com/PolyXRD/XinMatch-DataBase) 的 `data/`，
-> 构建代码与工具也一并归到那边。本仓库只负责 **polyDB**；`inorg_cif/` 与
-> `inorg_manifest.sqlite` 两库共用，仍放在这里。
+> 构建代码与工具也一并归到那边。本仓库只负责 **polyDB**；源数据根
+> `D:/Project/XRD/sync-COD` 由两库共用、两个仓库都不包含它。
 
 ---
 
-## 6. 已知缺口（20261021 版实测，未修）
+## 6. 已知缺口（20261021 版实测）
 
-| 项 | 现状 | 影响 | 修法 |
+| 项 | 已发布两库的现状 | 影响 | 状态 |
 |---|---|---|---|
-| `entries.density` | **两库 100% 为 NULL**（Inorg 0/77,500、Full 0/521,361） | PolyXRD 候选列表的"密度"列空白；不影响峰位/检索/精修 | `build_polydb.py` 里 `B.formula_mass()` 实际不存在（`build_dbs` 无质量表），异常被 `try/except` 吞掉后写 None。补一张原子量表 + 只重建 `index.sqlite` 即可，无需重算峰 |
-| `entries.tier` / `dup_group` | 全为 0（未分层、未合并同相复本） | 检索结果里同一物相的多条复本都出现 | 需按空间群+晶胞+元素做去重组，属后续工作 |
+| `entries.density` | **两库 100% 为 NULL**（Inorg 0/77,500、Full 0/521,361） | PolyXRD 候选列表的"密度"列空白；不影响峰位/检索/精修 | **代码已修（2026-10-23）**：`build_dbs.py` 里 `formula_mass()` 根本不存在，异常被 `try/except` 吞掉后写 None。现已在 `cif_common.py` 补上 IUPAC 标准原子量表，实测 196 相切片填充率 94.4%（刚玉 Al₂O₃ 算得 3.98 g/cm³，实测 3.99）。**已发布产物未改动**（改了 sha256 就对不上），下次重建即正常 |
+| `entries.tier` / `dup_group` | 全为 0（未分层、未合并同相复本） | 检索结果里同一物相的多条复本都出现 | 未动，需按空间群+晶胞+元素做去重组 |
 | 峰计算 skip | Inorg 1,698 条（2.14%）、Full 13,805 条（2.58%） | 这些条目不进库（多为无原子位点 / 晶胞 > 30,000 Å³） | 已按原因分类记录在 `meta.build.skip_reasons`，可逐类评估 |
-
-> `density` 这一条是本仓库建立（2026-10-23）时复核发现的既有缺陷，两个已发布库原样保留
-> （未改动产物，以免与校验值不符），代码侧待修。
 
 ## 7. 数据来源与许可
 
@@ -210,3 +216,6 @@ python tools/verify_polydb.py polydb/COD-Full-20261021.polyDB --no-hash       # 
 | 2026-10-21 | polyDB v1 格式定稿；`COD-Inorg` / `COD-Full` 两库建成 |
 | 2026-10-23 | 本仓库建立并发布 `20261021` release（代码 + 两库 zip） |
 | 2026-10-23 | 格式收敛：移除旧 3COD `.sqlite` 打包规范与参考代码（`sync-COD-pack/`）；此后只保留 **polyDB** 与 **xinDB** |
+| 2026-10-23 | **源数据迁出仓库** → `D:/Project/XRD/sync-COD`（`COD/ PCOD/ TCOD/ inorg_cif/ inorg_manifest.sqlite`，两库共用），全部脚本改走 `XRD_DATA_ROOT` |
+| 2026-10-23 | **代码收敛**：`tools/` 从 92 个脚本收到 9 个，旧格式构建/验收与一次性诊断全部删除；同步脚本移入 `tools/sync/` 并标停用 |
+| 2026-10-23 | 补 `formula_mass()`（IUPAC 原子量），修好 `density` 全 NULL 缺陷（下次重建生效） |
