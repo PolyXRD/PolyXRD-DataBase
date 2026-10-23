@@ -101,6 +101,10 @@ D:/Project/XRD/sync-COD/          ← 数据根，PolyXRD / XinMatch 两库共�
 └── inorg_manifest.sqlite        逐条清单（由 scan_inorg.py 生成）
 ```
 
+这个目录本身也有仓库：[**PolyXRD/sync-COD**](https://github.com/PolyXRD/sync-COD)
+——只放数据侧工具（数据验收 3 个 + 与官方同步 10 个）和布局说明，数据同样不入库。
+数据完整性可以用它的 `tools/verify_data_root.py` 一次验 17 项。
+
 换盘或换机器时用环境变量覆盖，不必改代码：
 
 ```bash
@@ -219,4 +223,5 @@ python tools/verify_polydb.py polydb/COD-Full-20261021.polyDB --no-hash       # 
 | 2026-10-23 | **源数据迁出仓库** → `D:/Project/XRD/sync-COD`（`COD/ PCOD/ TCOD/ inorg_cif/ inorg_manifest.sqlite`，两库共用），全部脚本改走 `XRD_DATA_ROOT` |
 | 2026-10-23 | **代码收敛**：`tools/` 从 92 个脚本收到 6 个，旧格式构建/验收与一次性诊断全部删除 |
 | 2026-10-23 | 同步 10 个 + 数据验收 3 个脚本移出仓库，落到 `<数据根>/tools/`（同步部分停用）；仓库只留构建链与产物验收 |
+| 2026-10-23 | 数据侧工具独立成公开仓库 [**PolyXRD/sync-COD**](https://github.com/PolyXRD/sync-COD)（数据仍不入库） |
 | 2026-10-23 | 补 `formula_mass()`（IUPAC 原子量），修好 `density` 全 NULL 缺陷（下次重建生效） |
