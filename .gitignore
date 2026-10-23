@@ -5,7 +5,6 @@ TCOD/
 inorg_cif/
 polydb/
 xindb/
-sync-COD-pack/reference/
 
 # ── 构建中间件 ──────────────────────────────────────────────
 _polydb_parts/
