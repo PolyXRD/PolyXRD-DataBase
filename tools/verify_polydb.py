@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""polyDB v1 结构校验器（纯标准库，无需 numpy）。
+"""polyDB v4 结构校验器（纯标准库，无需 numpy）。
 
 校验项（全部为"读不到/对不上就报错"的硬判据）：
   1. 必需段齐全（meta.json / index.sqlite / peaks_d.f32 / peaks_i.u16 /

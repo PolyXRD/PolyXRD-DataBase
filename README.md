@@ -62,7 +62,7 @@ COD-Inorg-20261021.polyDB/
 | 温度因子 | 无 Debye-Waller（= pymatgen 默认口径） |
 | 阵列 | 全部 little-endian，不支持大端 |
 
-完整字段级规范见 [`docs/外挂库格式规范-polyDB-v1.md`](docs/外挂库格式规范-polyDB-v1.md)，
+完整字段级规范见 [`docs/外挂库格式规范-polyDB-v4.md`](docs/外挂库格式规范-polyDB-v4.md)，
 设计取舍与实测数据见 [`docs/polyDB重建方案-20261021.md`](docs/polyDB重建方案-20261021.md)。
 
 > ⚠️ **行号铁律**：数组段行号必须走 `index.sqlite.entries.row_idx` 列，**不能**用 `eid-1`。
@@ -169,7 +169,7 @@ python tools/verify_polydb.py polydb/COD-Full-20261021.polyDB --no-hash       # 
 │   ├── fastxrd.py                   峰位/强度计算（无温度因子，pymatgen 口径）
 │   └── verify_polydb.py             polyDB 结构 32 项验收器
 └── docs/
-    ├── 外挂库格式规范-polyDB-v1.md   字段级规范（容器/峰口径/各段/reader 契约）
+    ├── 外挂库格式规范-polyDB-v4.md   字段级规范（容器/峰口径/各段/reader 契约）
     ├── polyDB重建方案-20261021.md   设计取舍、13 试样消融、A/B 比对
     └── bench/                       建库报告与基准 JSON（含 Inorg 全链路实测）
 ```
@@ -217,7 +217,7 @@ python tools/verify_polydb.py polydb/COD-Full-20261021.polyDB --no-hash       # 
 
 | 日期 | 事件 |
 |---|---|
-| 2026-10-21 | polyDB v1 格式定稿；`COD-Inorg` / `COD-Full` 两库建成 |
+| 2026-10-21 | polyDB v4 格式定稿；`COD-Inorg` / `COD-Full` 两库建成 |
 | 2026-10-23 | 本仓库建立并发布 `20261021` release（代码 + 两库 zip） |
 | 2026-10-23 | 格式收敛：移除旧 3COD `.sqlite` 打包规范与参考代码（`sync-COD-pack/`）；此后只保留 **polyDB** 与 **xinDB** |
 | 2026-10-23 | **源数据迁出仓库** → `D:/Project/XRD/sync-COD`（`COD/ PCOD/ TCOD/ inorg_cif/ inorg_manifest.sqlite`，两库共用），全部脚本改走 `XRD_DATA_ROOT` |

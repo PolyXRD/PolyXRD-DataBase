@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""polyDB v1 构建器：COD CIF → `*.polyDB` 目录容器。
+"""polyDB v4 构建器：COD CIF → `*.polyDB` 目录容器。
 
-规范见 `PolyXRD/docs/外挂库格式规范-polyDB-v1.md`。要点：
+规范见 `PolyXRD/docs/外挂库格式规范-polyDB-v4.md`。要点：
   · 峰口径：λ=1.5406、2θ 5~100.76°（d≥1.0）、等价反射按 2θ 合并、I 归一 1000；
   · 每相保留 **强度前 K=100** 条峰（不是按 d 截断），行内按 I 降序；
   · 数组段：peaks_d.f32 / peaks_i.u16 / bins.u8（d 分箱位图）/ elem.u8（元素位图）；
