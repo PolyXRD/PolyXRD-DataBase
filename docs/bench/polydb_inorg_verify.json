@@ -1,0 +1,23 @@
+{
+  "db": "D:/Project/XRD/PolyXRD-DataBase/polydb/COD-Inorg-20261021.polyDB",
+  "ok": true,
+  "failures": [],
+  "warnings": [],
+  "checks": {
+    "phases": 77500,
+    "k": 100,
+    "hash_s": 0.8,
+    "entries": 77500,
+    "sites": 1005846,
+    "avg_peaks": 76.9,
+    "bins_top_m": 40,
+    "sample_compared": 100,
+    "max_abs_d": 9.038327348775965e-07,
+    "max_abs_i": 0.007609346091498992
+  },
+  "meta": {
+    "format": "polyDB",
+    "schema_version": 1,
+    "variant": "cod-inorg"
+  }
+}

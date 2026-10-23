@@ -1,0 +1,48 @@
+# ── 数据本体：绝不入仓（体积 100+ GB / 200 万文件）─────────────────
+COD/
+PCOD/
+TCOD/
+inorg_cif/
+polydb/
+xindb/
+sync-COD-pack/reference/
+
+# ── 构建中间件 ──────────────────────────────────────────────
+_polydb_parts/
+_scan_parts/
+_parts/
+_tmp/
+_exp/
+
+# ── 数据库文件（含 -wal / -shm）─────────────────────────────
+*.sqlite
+*.sqlite-wal
+*.sqlite-shm
+*.db
+*.xinDB
+*.xinDB-wal
+*.xinDB-shm
+*.polyDB
+*.prev
+*.bak-*
+*_manifest.sqlite
+
+# ── 日志与报告输出 ──────────────────────────────────────────
+sync_logs/
+*.log
+*.jsonl
+
+# ── Python ─────────────────────────────────────────────────
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.ruff_cache/
+
+# ── 工具与编辑器 ────────────────────────────────────────────
+.workbuddy/
+.vscode/
+.idea/
+Thumbs.db
+desktop.ini
+~$*

@@ -1,0 +1,330 @@
+{
+  "db": "D:/Project/XRD/PolyXRD-DataBase/polydb/COD-Inorg-20261021.polyDB",
+  "top_n": 20,
+  "tol": 0.2,
+  "levels": {
+    "B": {
+      "cod_old": {
+        "n": 49,
+        "top1": 0,
+        "top3": 0,
+        "top10": 0,
+        "mrr": 0.0,
+        "miss": 49,
+        "time_s": 132.2,
+        "avg_s": 10.17
+      },
+      "polydb": {
+        "n": 49,
+        "top1": 8,
+        "top3": 9,
+        "top10": 15,
+        "mrr": 0.197,
+        "miss": 33,
+        "time_s": 5.9,
+        "avg_s": 0.45
+      },
+      "verdict": "FAIL",
+      "failures": [
+        "旧库 top10 有候选未进 polyDB 池: {'1-1': [4106785, 1539478, 1540344, 1523430], '2-2': [1509840, 1509859, 1509848, 1509060], '5-1': [1010962, 7715509, 1009052, 1011334], '5-2': [7713192, 1509671], '5-3': [1523991, 7715809], '7-1': [1011240, 1011081], '7-2': [1011097, 1011159]}"
+      ],
+      "pairs": [
+        {
+          "sample": "1-1",
+          "old_ranks": {
+            "Lithium iron phosphate": null
+          },
+          "new_ranks": {
+            "Lithium iron phosphate": null
+          },
+          "old_top10_missing_in_new": [
+            4106785,
+            1539478,
+            1540344,
+            1523430
+          ],
+          "top10_id_overlap": 6,
+          "old_n": 20,
+          "new_n": 20,
+          "old_s": 7.66,
+          "new_s": 0.34
+        },
+        {
+          "sample": "1-2",
+          "old_ranks": {
+            "NCM 811": null
+          },
+          "new_ranks": {
+            "NCM 811": null
+          },
+          "old_top10_missing_in_new": [],
+          "top10_id_overlap": 10,
+          "old_n": 20,
+          "new_n": 20,
+          "old_s": 7.25,
+          "new_s": 0.37
+        },
+        {
+          "sample": "2-1",
+          "old_ranks": {
+            "Zincite": null,
+            "Calcite": null
+          },
+          "new_ranks": {
+            "Zincite": null,
+            "Calcite": 6
+          },
+          "old_top10_missing_in_new": [],
+          "top10_id_overlap": 10,
+          "old_n": 20,
+          "new_n": 20,
+          "old_s": 6.97,
+          "new_s": 0.35
+        },
+        {
+          "sample": "2-2",
+          "old_ranks": {
+            "Anatase": null,
+            "Rutile": null
+          },
+          "new_ranks": {
+            "Anatase": 1,
+            "Rutile": null
+          },
+          "old_top10_missing_in_new": [
+            1509840,
+            1509859,
+            1509848,
+            1509060
+          ],
+          "top10_id_overlap": 6,
+          "old_n": 20,
+          "new_n": 20,
+          "old_s": 8.69,
+          "new_s": 0.38
+        },
+        {
+          "sample": "3-1",
+          "old_ranks": {
+            "Zincite": null,
+            "Corundum": null,
+            "Fluorite": null
+          },
+          "new_ranks": {
+            "Zincite": 1,
+            "Corundum": null,
+            "Fluorite": null
+          },
+          "old_top10_missing_in_new": [],
+          "top10_id_overlap": 10,
+          "old_n": 20,
+          "new_n": 20,
+          "old_s": 9.65,
+          "new_s": 0.4
+        },
+        {
+          "sample": "3-2",
+          "old_ranks": {
+            "Zincite": null,
+            "Corundum": null,
+            "Fluorite": null
+          },
+          "new_ranks": {
+            "Zincite": 1,
+            "Corundum": null,
+            "Fluorite": 5
+          },
+          "old_top10_missing_in_new": [],
+          "top10_id_overlap": 10,
+          "old_n": 20,
+          "new_n": 20,
+          "old_s": 13.83,
+          "new_s": 0.47
+        },
+        {
+          "sample": "4-1",
+          "old_ranks": {
+            "Zincite": null,
+            "Corundum": null,
+            "Fluorite": null,
+            "Brucite": null
+          },
+          "new_ranks": {
+            "Zincite": 1,
+            "Corundum": null,
+            "Fluorite": null,
+            "Brucite": null
+          },
+          "old_top10_missing_in_new": [],
+          "top10_id_overlap": 10,
+          "old_n": 20,
+          "new_n": 20,
+          "old_s": 10.76,
+          "new_s": 0.46
+        },
+        {
+          "sample": "5-1",
+          "old_ranks": {
+            "α-Quartz": null,
+            "Cristobalite": null,
+            "Calcite": null,
+            "Magnesite": null,
+            "Dolomite": null
+          },
+          "new_ranks": {
+            "α-Quartz": null,
+            "Cristobalite": null,
+            "Calcite": 2,
+            "Magnesite": null,
+            "Dolomite": null
+          },
+          "old_top10_missing_in_new": [
+            1010962,
+            7715509,
+            1009052,
+            1011334
+          ],
+          "top10_id_overlap": 6,
+          "old_n": 20,
+          "new_n": 20,
+          "old_s": 10.85,
+          "new_s": 0.57
+        },
+        {
+          "sample": "5-2",
+          "old_ranks": {
+            "α-Quartz": null,
+            "Cristobalite": null,
+            "Calcite": null,
+            "Hematite": null,
+            "Muscovite": null
+          },
+          "new_ranks": {
+            "α-Quartz": null,
+            "Cristobalite": 4,
+            "Calcite": null,
+            "Hematite": null,
+            "Muscovite": null
+          },
+          "old_top10_missing_in_new": [
+            7713192,
+            1509671
+          ],
+          "top10_id_overlap": 8,
+          "old_n": 20,
+          "new_n": 20,
+          "old_s": 11.27,
+          "new_s": 0.62
+        },
+        {
+          "sample": "5-2b",
+          "old_ranks": {
+            "α-Quartz": null,
+            "Cristobalite": null,
+            "Calcite": null,
+            "Hematite": null,
+            "Muscovite": null
+          },
+          "new_ranks": {
+            "α-Quartz": null,
+            "Cristobalite": 13,
+            "Calcite": null,
+            "Hematite": 1,
+            "Muscovite": null
+          },
+          "old_top10_missing_in_new": [],
+          "top10_id_overlap": 10,
+          "old_n": 20,
+          "new_n": 20,
+          "old_s": 12.84,
+          "new_s": 0.55
+        },
+        {
+          "sample": "5-3",
+          "old_ranks": {
+            "α-Quartz": null,
+            "Gehlenite": null,
+            "Fluorapatite": null,
+            "Goethite": null,
+            "Kaolinite": null
+          },
+          "new_ranks": {
+            "α-Quartz": null,
+            "Gehlenite": null,
+            "Fluorapatite": null,
+            "Goethite": 1,
+            "Kaolinite": 6
+          },
+          "old_top10_missing_in_new": [
+            1523991,
+            7715809
+          ],
+          "top10_id_overlap": 8,
+          "old_n": 20,
+          "new_n": 20,
+          "old_s": 11.6,
+          "new_s": 0.58
+        },
+        {
+          "sample": "7-1",
+          "old_ranks": {
+            "α-Quartz": null,
+            "Boehmite": null,
+            "Anatase": null,
+            "Goethite": null,
+            "Kaolinite": null,
+            "Gibbsite": null,
+            "Hematite": null
+          },
+          "new_ranks": {
+            "α-Quartz": null,
+            "Boehmite": 10,
+            "Anatase": null,
+            "Goethite": null,
+            "Kaolinite": null,
+            "Gibbsite": 5,
+            "Hematite": 1
+          },
+          "old_top10_missing_in_new": [
+            1011240,
+            1011081
+          ],
+          "top10_id_overlap": 8,
+          "old_n": 20,
+          "new_n": 20,
+          "old_s": 10.01,
+          "new_s": 0.39
+        },
+        {
+          "sample": "7-2",
+          "old_ranks": {
+            "Quartz": null,
+            "Albite": null,
+            "Biotite": null,
+            "Clinochlore": null,
+            "Hornblende": null,
+            "Zircon": null
+          },
+          "new_ranks": {
+            "Quartz": 1,
+            "Albite": null,
+            "Biotite": null,
+            "Clinochlore": null,
+            "Hornblende": null,
+            "Zircon": null
+          },
+          "old_top10_missing_in_new": [
+            1011097,
+            1011159
+          ],
+          "top10_id_overlap": 8,
+          "old_n": 20,
+          "new_n": 20,
+          "old_s": 10.79,
+          "new_s": 0.41
+        }
+      ]
+    }
+  },
+  "ok": false
+}
