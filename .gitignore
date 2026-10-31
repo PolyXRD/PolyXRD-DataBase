@@ -12,6 +12,7 @@ polydb/
 
 # ── 构建中间件 ──────────────────────────────────────────────
 _polydb_parts/
+_mp_polydb_parts/
 _scan_parts/
 _parts/
 _tmp/
