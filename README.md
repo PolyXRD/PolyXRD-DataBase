@@ -3,12 +3,30 @@
 **PolyXRD 外挂物相库（polyDB 格式）的构建代码、格式规范与发布产物。**
 
 本仓库只放**代码与文档**；数据库本体以 [Releases](../../releases) 里的压缩包分发（单库 48 MB / 710 MB，
-不入 git 历史）。数据源为 [Crystallography Open Database (COD)](http://www.crystallography.net/cod/)，
-本仓库不转售、不改造原始 CIF，只做峰位/强度计算与索引打包。
+不入 git 历史）。数据源为 [Crystallography Open Database (COD)](http://www.crystallography.net/cod/)
+与 [Materials Project](https://materialsproject.org)（CC BY 4.0）；本仓库不转售、不改造原始 CIF，
+只做峰位/强度计算与索引打包。
 
 ---
 
-## 1. 发布产物（Release `20261021`）
+## 1. 发布产物（Release `20261021` / `20261031`）
+
+### 1.1 MP-20261031（Materials Project 外挂库）
+
+| 库 | 物相数 | 峰数 | 位点数 | 解压后 | Release 压缩包 | SHA-256 (zip) |
+|---|---|---|---|---|---|---|
+| **MP** | 155,204 | 12,705,201 | 2,407,784 | 187,675,763 B（179.0 MiB） | `MP-20261031.polyDB.zip`（106.5 MB） | `ccfccf53…a16c22` |
+
+- 数据源：[Materials Project](https://materialsproject.org) summary（2025-09-25，CC BY 4.0）。
+  210,579 条记录按 reduced formula 去重、每组保留最低 `energy_above_hull` 构型，得 155,204 相。
+- MP 的 CIF 是 pymatgen 导出的 **P1 原胞**：构建器做「原胞 → 常规胞 → 非对称单位」，
+  峰在常规胞上计算，避免 F/I/C 心晶格把等价反射拆成假峰（详见 `tools/build_mp_polydb.py` 的文档字符串）。
+- `entries.eid` = MP 编号（`mp-3207172` → `3207172`），`mvc-*` 条目落 9 亿号段；
+  `tier=2`（DFT 理论结构，非实验 PDF 卡）。
+- 构建 / 校验：`tools/build_mp_polydb.py`、`tools/verify_mp_polydb.py`；
+  实测结构校验 32/32 PASS、L3 回算 max|Δd|=8.1×10⁻⁷ Å / max|ΔI|=0.015（100 相）。
+
+### 1.2 COD-20261021（COD 无机 / 全库）
 
 | 库 | 物相数 | 峰数 | 位点数 | 解压后 | Release 压缩包 | SHA-256 (zip) |
 |---|---|---|---|---|---|---|
@@ -139,6 +157,21 @@ python tools/build_polydb.py --scope full  --workers 8     # → polydb/COD-Full
 skip 全部可分类：`no_sites`（无原子位点）、`no_pattern`（展开/计算异常）、
 `volume_too_large`（晶胞 > 30,000 Å³）、`no_volume`（无晶胞体积）。
 
+### 3.5 MP 库（Materials Project，2026-10-31 新增）
+
+```bash
+export XRD_MP_CIF_DIR=/path/to/mp_cif          # 默认 D:\Project\MP-summary\cif
+python tools/build_mp_polydb.py --workers 14 --out polydb/MP-<日期>.polyDB
+python tools/verify_mp_polydb.py polydb/MP-<日期>.polyDB --sample 100   # L3 精度层
+```
+
+- MP CIF 是 pymatgen 的 **P1 原胞**：逐条做「原胞 → 常规胞 → 非对称单位」，
+  峰在常规胞上计算；三级回退 L0（真实 SG + 非对称单位）→ L1（常规胞全原子 + `P 1`）
+  → L2（原胞全原子 + `P 1`），汇总在 `meta.build.cell_representations`。
+- 断点续跑同上：`_mp_polydb_parts/<variant>/uNNNNN.*`，`--force` 重算。
+- 本机实测：155,204 相 / 179 MB / 14 进程约 60 min（其中 1 个双钙钛矿密集单元 15 min）。
+- `entries.eid` = MP 编号；`mvc-*` 条目落 9 亿号段；`tier=2`（理论）。
+
 ---
 
 ## 4. 校验
@@ -146,6 +179,7 @@ skip 全部可分类：`no_sites`（无原子位点）、`no_pattern`（展开/�
 ```bash
 python tools/verify_polydb.py polydb/COD-Inorg-20261021.polyDB                # 含 sha256
 python tools/verify_polydb.py polydb/COD-Full-20261021.polyDB --no-hash       # 大库省时
+python tools/verify_mp_polydb.py polydb/MP-20261031.polyDB --sample 100       # MP：L3 回算
 ```
 
 纯标准库实现，32 项硬判据：段齐全 / 字节数 / sha256 / 各段 shape 自洽 /
@@ -207,9 +241,12 @@ python tools/verify_polydb.py polydb/COD-Full-20261021.polyDB --no-hash       # 
 ## 7. 数据来源与许可
 
 - **代码**：沿 PolyXRD 的双许可（学术非商业 / 商业另议），见 `LICENSE`、`LICENSE-CN`。
-- **数据**：CIF 内容版权归 COD 及各原始文献作者。使用本仓库产物时请遵守
+- **数据（COD）**：CIF 内容版权归 COD 及各原始文献作者。使用本仓库产物时请遵守
   [COD 的使用条款](http://www.crystallography.net/cod/) 并引用 COD 与相应原始文献。
   本仓库仅分发**派生索引**（峰位/强度/位点），不改写也不替代原始 CIF。
+- **数据（MP）**：Materials Project summary 数据以 CC BY 4.0 提供，使用时请引用
+  [Materials Project](https://materialsproject.org)（APL Materials 4, 053501 (2016)）。
+  `MP-20261031` 同为派生索引，条目可经 `entries.cif_rel` 追溯到源 CIF 文件名。
 - 峰位/强度为**计算值**（无温度因子、无仪器/样品展宽），与实验卡片（ICDD PDF）存在
   系统性偏差（高角线偏强）。用于物相识别足够，用于定量须自行标定。
 
@@ -225,3 +262,5 @@ python tools/verify_polydb.py polydb/COD-Full-20261021.polyDB --no-hash       # 
 | 2026-10-23 | 同步 10 个 + 数据验收 3 个脚本移出仓库，落到 `<数据根>/tools/`（同步部分停用）；仓库只留构建链与产物验收 |
 | 2026-10-23 | 数据侧工具独立成公开仓库 [**PolyXRD/sync-COD**](https://github.com/PolyXRD/sync-COD)（数据仍不入库） |
 | 2026-10-23 | 补 `formula_mass()`（IUPAC 原子量），修好 `density` 全 NULL 缺陷（下次重建生效） |
+| 2026-10-31 | 新增 `tools/build_mp_polydb.py` / `verify_mp_polydb.py` / `cif_dir_to_polydb.py`：MP summary CIF → polyDB，L0/L1/L2 晶胞回退 |
+| 2026-10-31 | 发布 `20261031`：**MP** 库 155,204 相（106.5 MB zip），结构 32/32 PASS、L3 回算通过 |
