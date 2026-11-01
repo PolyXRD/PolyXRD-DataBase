@@ -172,7 +172,7 @@ CREATE TABLE meta (key TEXT PRIMARY KEY, value TEXT);
 {
   "format": "polyDB",
   "schema_version": 1,
-  "variant": "cod-inorg",            // cod-inorg | cod-full
+  "variant": "cod-inorg",            // <lib>-<scope>，见 §5.1
   "peak_convention": { ... },         // §2 全字段
   "counts": { "phases": 77500, "peaks": 5962013, "sites": 1005846, "k": 100 },
   "sections": {
@@ -201,6 +201,26 @@ CREATE TABLE meta (key TEXT PRIMARY KEY, value TEXT);
 > **精确 17 B/位点**，与 §4.5 一致。
 
 **版本策略**：`schema_version` 变化 = 不兼容；新增可选段或可选列 = `schema_version` 不变，reader 必须容忍缺失段（向后兼容）。禁止改动既有段的语义与字节布局。
+
+### 5.1 `variant` 命名（2026-10-31 扩展）
+
+`variant` = `<lib>-<scope>`，`lib ∈ {cod, pcod, tcod}`，`scope ∈ {inorg, full}`：
+
+| variant | 来源 | meta.source.lib |
+|---|---|---|
+| `cod-inorg` / `cod-full` | COD（实验测定 + 少量理论） | `COD` |
+| `pcod-inorg` | PCOD（GRINSP 预测集，**全部为无机**） | `PCOD` |
+| `tcod-inorg` / `tcod-full` | TCOD（理论计算） | `TCOD` |
+
+- 三个库的 CIF 目录布局与清单口径完全一致（`files.lib` 区分，`cod_id` 已按库偏移：
+  COD +0 / PCOD +2e7 / TCOD +1e8），因此**格式层面无任何差异**，只有 `variant`、
+  `source` 与 `eid` 号段不同。
+- `variant` 必须**逐库唯一**，不能三库都写 `cod-inorg`：PolyXRD 的
+  `discover_polydb()` 按 `variant` 自动发现默认库，写重了会让非 COD 库被当成
+  默认 COD-Inorg 顶上去。
+- PolyXRD v4.x 的内置槽位只登记了 `cod-inorg` / `cod-full`；`pcod-*` / `tcod-*`
+  通过挂载面板「自定义挂载」按目录添加（`kind` 自动识别为 `polydb`）。
+- 因 PCOD 全库无机，**不存在 `pcod-full`**（建了也与 `pcod-inorg` 逐字节相同）。
 
 ---
 

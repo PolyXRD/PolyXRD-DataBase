@@ -9,7 +9,7 @@
 
 ---
 
-## 1. 发布产物（Release `20261021` / `20261031`）
+## 1. 发布产物（Release `20261020` / `20261021` / `20261031`）
 
 ### 1.1 MP-20261031（Materials Project 外挂库）
 
@@ -47,6 +47,31 @@
 # 使用方式（任一目录放到任意路径后，在 PolyXRD 里指向该 .polyDB 目录）
 unzip COD-Inorg-20261021.polyDB.zip
 python tools/verify_polydb.py COD-Inorg-20261021.polyDB
+```
+
+### 1.3 TCOD / PCOD-20261020（TCOD 无机 / 全库 + PCOD 无机）
+
+| 库 | 物相数 | 峰数 | 位点数 | 解压后 | Release 压缩包 | SHA-256 (zip) |
+|---|---|---|---|---|---|---|
+| **TCOD-Inorg** | 46,541 | 3,767,731 | 754,606 | 55,138,528 B（52.6 MiB） | `TCOD-Inorg-20261020.polyDB.zip`（31.5 MB） | `783bc4f6…cc4ead` |
+| **TCOD-Full** | 359,307 | 35,039,291 | 22,178,424 | 714,704,055 B（681.6 MiB） | `TCOD-Full-20261020.polyDB.zip`（466.6 MB） | `81ae572f…56ab47` |
+| **PCOD-Inorg** | 1,061,817 | 106,160,732 | 32,522,180 | 1,481,618,146 B（1413.0 MiB） | `PCOD-Inorg-20261020.polyDB.zip`（936.9 MB） | `898dc822…89310f` |
+
+> 完整校验值见 Release 附带的 `SHA256SUMS.txt`；各库内部 8 段的 sha256 写在自身 `meta.json.sections`。
+
+- `TCOD-Inorg` / `TCOD-Full` = TCOD（理论计算结构）的无机子集 / 全量（Full 多出的主要是 C/H 有机相，各约 32 万相）；
+  `PCOD-Inorg` = PCOD 全量 —— **PCOD 没有 `Full` 变体**：清单里 1,061,962 条
+  `is_inorg` 全为 1（GRINSP 预测集本身不含有机相），`pcod-full` 会与 `pcod-inorg` 逐字节相同。
+- `variant` 分别为 `tcod-inorg` / `tcod-full` / `pcod-inorg`，互不相同，可与 COD 库共存。
+  PolyXRD v4.x 的内置槽位只登记 `cod-inorg` / `cod-full`，这三个库走挂载面板「自定义挂载」。
+- 命名里的 `20261020` 是**官方库同步日期**（非构建日；构建于 2026-10-31）。
+- 三库均通过三重验收（结构 32/32、抽样 200 相回算 max|Δd| ≤ 9.5×10⁻⁷ Å、PolyXRD reader 挂载 + 检索），
+  细节见 [`docs/polyDB-TCOD-PCOD构建报告-20261020.md`](docs/polyDB-TCOD-PCOD构建报告-20261020.md)。
+
+```bash
+python tools/build_polydb.py --lib TCOD --scope inorg --stamp 20261020 --workers 4
+python tools/build_polydb.py --lib TCOD --scope full  --stamp 20261020 --workers 4
+python tools/build_polydb.py --lib PCOD --scope inorg --stamp 20261020 --workers 4
 ```
 
 ---
@@ -113,8 +138,8 @@ pip install numpy
 ```
 D:/Project/XRD/sync-COD/          ← 数据根，PolyXRD / XinMatch 两库共用
 ├── COD/                    必需：COD 的 CIF（3 级布局，如 COD/1/00/00/1000000.cif）
-├── PCOD/                   可选：本仓库脚本支持，但 polyDB 发布版只用 COD
-├── TCOD/                   可选
+├── PCOD/                   PCOD 的 CIF（2 级布局，全为无机：GRINSP 预测集）
+├── TCOD/                   TCOD 的 CIF（3 级布局，含粉末/有机条目）
 ├── inorg_cif/{COD,PCOD,TCOD}/   无机子集副本（由 scan_inorg.py 生成）
 └── inorg_manifest.sqlite        逐条清单（由 scan_inorg.py 生成）
 ```
@@ -140,12 +165,19 @@ python tools/scan_inorg.py --workers 6
 ```bash
 python tools/build_polydb.py --scope inorg --workers 8     # → polydb/COD-Inorg-<今天>.polyDB
 python tools/build_polydb.py --scope full  --workers 8     # → polydb/COD-Full-<今天>.polyDB
+
+# 其它来源库：--lib COD|PCOD|TCOD（缺省 COD，行为不变）+ --stamp 指定日期戳
+python tools/build_polydb.py --lib TCOD --scope full --stamp 20261020 --workers 4
+python tools/build_polydb.py --lib PCOD --scope inorg --stamp 20261020 --workers 4
 ```
 
 - 两阶段：并行切 unit（默认 2000 行/单元，已存在的 unit 自动跳过 → **断点续跑**）→ 串行合并写段。
 - `--limit N` / `--out PATH` 可先试产；`--force` 忽略旧 part 重算；
   `--bins-only --out <现有库>` 只从 `peaks_d.f32` 重建 `bins.u8`（调 `--bins-top-m` 时秒级生效）。
 - 收尾会打印**条数守恒检查**：`清单 = 入库 + skip`，不平就报警（断点续跑留下陈旧 part 的典型症状）。
+- `--max-skip-ratio`（默认 0.20）：跳过率超限直接中止、拒绝出库 —— 防"散射因子表缺失导致
+  worker 吞异常、跑完出空壳库"那类事故。
+- parts 按 variant 分目录（`_polydb_parts/<lib>-<scope>/`），三库互不干扰。
 
 ### 3.4 实测工期（本机 4 核 / 机械盘 / COD 本机副本）
 

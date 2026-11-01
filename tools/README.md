@@ -38,6 +38,26 @@ python tools/build_polydb.py --scope inorg --workers 8
 python tools/build_polydb.py --scope full  --workers 8
 ```
 
+### 来源库选择（`--lib`，2026-10-31 起）
+
+三个来源库共用同一份清单与同一套格式逻辑，只有源目录与 `variant` 不同：
+
+| 命令 | 产物 | variant |
+|---|---|---|
+| `build_polydb.py --lib COD --scope inorg` | `COD-Inorg-<stamp>.polyDB` | `cod-inorg` |
+| `build_polydb.py --lib COD --scope full` | `COD-Full-<stamp>.polyDB` | `cod-full` |
+| `build_polydb.py --lib TCOD --scope inorg` | `TCOD-Inorg-<stamp>.polyDB` | `tcod-inorg` |
+| `build_polydb.py --lib TCOD --scope full` | `TCOD-Full-<stamp>.polyDB` | `tcod-full` |
+| `build_polydb.py --lib PCOD --scope inorg` | `PCOD-Inorg-<stamp>.polyDB` | `pcod-inorg` |
+
+- `--lib` 缺省 `COD`，与历史行为逐字节一致；源目录取 `<数据根>/<LIB>/`。
+- `--stamp YYYYMMDD` 指定产物名里的日期戳（默认取当天）。按官方同步日命名时用它。
+- parts 目录按 variant 分开（`_polydb_parts/<lib>-<scope>/`），**换库不会互相污染**。
+- `--max-skip-ratio`（默认 0.20）：跳过率超限直接中止、拒绝出库。这是"散射因子表
+  缺失 → worker 吞异常 → 流程正常跑完但入库 0 条"那类空壳库的最后一道闸。
+- `PCOD` 全库 `is_inorg=1`，所以**没有 `pcod-full`**（与 `pcod-inorg` 内容相同）。
+
+
 ## B. 产物验收门禁
 
 | 脚本 | 判据 |

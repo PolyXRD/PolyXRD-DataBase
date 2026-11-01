@@ -17,11 +17,16 @@
 用法：
     python tools/build_polydb.py --scope inorg --workers 8
     python tools/build_polydb.py --scope full  --workers 8
+    python tools/build_polydb.py --lib TCOD --scope inorg --stamp 20261020
     python tools/build_polydb.py --scope inorg --limit 5000 --out D:/tmp/test.polyDB
 
-源数据默认在 ``D:/Project/XRD/sync-COD``（内含 ``COD/`` 与
+源数据默认在 ``D:/Project/XRD/sync-COD``（内含 ``COD/ PCOD/ TCOD/`` 与
 ``inorg_manifest.sqlite``），可用环境变量 ``XRD_DATA_ROOT`` 覆盖。
 产物默认写到本仓库的 ``polydb/``。
+
+来源库由 ``--lib`` 选择（COD / PCOD / TCOD），三者共用同一份清单
+（``files.lib`` 区分，``cod_id`` 已按库偏移：COD +0 / PCOD +2e7 / TCOD +1e8）。
+``--lib COD`` 是默认值，行为与历史版本逐字节一致。
 """
 from __future__ import annotations
 
@@ -55,6 +60,10 @@ COD_DIR = os.path.join(DATA_ROOT, "COD")
 PARTS_ROOT = os.path.join(REPO_ROOT, "_polydb_parts")
 #: 产物默认落点（仓库内 polydb/）
 POLYDB_DIR = os.path.join(REPO_ROOT, "polydb")
+
+#: 支持的来源库 → 源 CIF 目录名（清单里的 ``files.lib`` 取值）。
+#: 三个库的目录布局一致（``<LIB>/<a>/<b>/<b><id>.cif``），rel 存相对该目录的路径。
+SOURCE_LIBS = ("COD", "PCOD", "TCOD")
 
 FORMAT_NAME = "polyDB"
 SCHEMA_VERSION = 1
@@ -104,8 +113,12 @@ Z_OF = {s: i + 1 for i, s in enumerate(ELEMENTS)}
 _W = {}
 
 
-def _init_worker() -> None:
-    """worker 进程初始化：导入重模块 + 原子散射参数。"""
+def _init_worker(lib_dir: str = COD_DIR) -> None:
+    """worker 进程初始化：导入重模块 + 原子散射参数 + 记住源 CIF 根目录。
+
+    ``lib_dir`` 必须经 ``initargs`` 传入：Windows 下 spawn 出来的子进程会重新
+    以默认值导入本模块，父进程运行时改的全局变量**不会**被继承。
+    """
     import cif_common as B  # noqa: F401
     import fastxrd as FX  # noqa: F401
     from fastcif import parse_cif, expand_sites  # noqa: F401
@@ -113,6 +126,7 @@ def _init_worker() -> None:
     _W["FX"] = FX
     _W["parse_cif"] = parse_cif
     _W["expand_sites"] = expand_sites
+    _W["lib_dir"] = lib_dir
     _W["FX"]._load_params()      # 预热散射因子表
 
 
@@ -144,6 +158,7 @@ def process_unit(task: tuple) -> dict:
     FX = _W["FX"]
     parse_cif = _W["parse_cif"]
     expand_sites = _W["expand_sites"]
+    lib_dir = _W.get("lib_dir") or COD_DIR
 
     t0 = time.perf_counter()
     ids: list[int] = []
@@ -164,7 +179,7 @@ def process_unit(task: tuple) -> dict:
         reasons[reason] = reasons.get(reason, 0) + 1
 
     for cod_id, rel in rows:
-        path = os.path.join(COD_DIR, str(rel).replace("\\", "/"))
+        path = os.path.join(lib_dir, str(rel).replace("\\", "/"))
         try:
             with open(path, "rb") as fh:
                 text = fh.read().decode("utf-8", errors="replace")
@@ -564,8 +579,12 @@ def rebuild_bins(db_dir: str, top_m: int = BINS_TOP_M) -> dict:
 # ────────────────────────── main ──────────────────────────
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser()
+    ap.add_argument("--lib", choices=SOURCE_LIBS, default="COD",
+                    help="来源库（清单 files.lib），决定源目录与 variant")
     ap.add_argument("--scope", choices=("inorg", "full"), default="inorg")
     ap.add_argument("--out", default="")
+    ap.add_argument("--stamp", default="",
+                    help="产物名里的日期戳（缺省今天）；用户按官方同步日命名时用")
     ap.add_argument("--workers", type=int, default=8)
     ap.add_argument("--unit", type=int, default=2000)
     ap.add_argument("--limit", type=int, default=0)
@@ -573,6 +592,8 @@ def main(argv=None) -> int:
     ap.add_argument("--keep-parts", action="store_true", default=True)
     ap.add_argument("--bins-top-m", type=int, default=BINS_TOP_M,
                     help="位图倒排索引的强峰条数（默认 40，须 ≥ max_ref_peaks）")
+    ap.add_argument("--max-skip-ratio", type=float, default=0.20,
+                    help="跳过率上限；超过即中止（防散射因子表缺失导致全库空壳）")
     ap.add_argument("--bins-only", action="store_true",
                     help="只从已有 peaks_d.f32 重建 bins.u8（需配合 --out 指向现有库）")
     args = ap.parse_args(argv)
@@ -585,27 +606,36 @@ def main(argv=None) -> int:
         print(json.dumps(rep, ensure_ascii=False, indent=2))
         return 0
 
-    variant = "cod-inorg" if args.scope == "inorg" else "cod-full"
-    stamp = datetime.now().strftime("%Y%m%d")
+    lib = args.lib.upper()
+    lib_dir = os.path.join(DATA_ROOT, lib)
+    variant = "%s-%s" % (lib.lower(), "inorg" if args.scope == "inorg" else "full")
+    stamp = args.stamp or datetime.now().strftime("%Y%m%d")
     out_dir = args.out or os.path.join(
-        POLYDB_DIR, "COD-%s-%s.polyDB" % ("Inorg" if args.scope == "inorg" else "Full", stamp))
+        POLYDB_DIR, "%s-%s-%s.polyDB"
+        % (lib, "Inorg" if args.scope == "inorg" else "Full", stamp))
     parts_dir = os.path.join(PARTS_ROOT, variant)
     if args.force and os.path.isdir(parts_dir):
         shutil.rmtree(parts_dir)
     os.makedirs(parts_dir, exist_ok=True)
     if args.limit and os.path.isdir(out_dir):
         shutil.rmtree(out_dir)
+    if not os.path.isdir(lib_dir):
+        print("源目录不存在：%s" % lib_dir)
+        return 2
 
     # 清单
     con = sqlite3.connect("file:%s?mode=ro" % MANIFEST, uri=True)
     where = "AND is_inorg=1" if args.scope == "inorg" else ""
-    sql = ("SELECT cod_id, rel FROM files WHERE lib='COD' %s ORDER BY cod_id" % where)
+    sql = ("SELECT cod_id, rel FROM files WHERE lib=? %s ORDER BY cod_id" % where)
     if args.limit:
         sql += " LIMIT %d" % int(args.limit)
-    rows = [(int(c), r) for c, r in con.execute(sql)]
+    rows = [(int(c), r) for c, r in con.execute(sql, (lib,))]
     meta_row = dict(con.execute("SELECT key, value FROM meta").fetchall())
     con.close()
-    print("scope=%s phases=%d out=%s" % (args.scope, len(rows), out_dir))
+    print("lib=%s scope=%s phases=%d out=%s" % (lib, args.scope, len(rows), out_dir))
+    if not rows:
+        print("清单里 lib=%s 没有符合 scope 的条目" % lib)
+        return 2
 
     units = [rows[i:i + args.unit] for i in range(0, len(rows), args.unit)]
     tasks = [(i, u, parts_dir, K) for i, u in enumerate(units)]
@@ -616,7 +646,8 @@ def main(argv=None) -> int:
     total_attempted = 0
     total_reasons: dict[str, int] = {}
     import multiprocessing as mp
-    with mp.Pool(max(1, args.workers), initializer=_init_worker) as pool:
+    with mp.Pool(max(1, args.workers), initializer=_init_worker,
+                 initargs=(lib_dir,)) as pool:
         for r in pool.imap_unordered(process_unit, tasks):
             done += 1
             total_n += r["n"]
@@ -650,8 +681,17 @@ def main(argv=None) -> int:
     if total_reasons:
         print("  skip 原因：" + ", ".join(
             "%s=%d" % (k, v) for k, v in sorted(total_reasons.items())))
+
+    # 峰失败率守护：缺散射因子表 / 源目录指错时，worker 会吞掉全部异常，
+    # 表现为"流程正常跑完但入库 0 条"。这种空壳库绝不能当成产物发出去。
+    if listed and total_skip / listed > args.max_skip_ratio:
+        print("\n❌ 跳过率 %.1f%% > 上限 %.0f%%：拒绝出库（%s）"
+              % (100.0 * total_skip / listed, 100.0 * args.max_skip_ratio, out_dir))
+        print("   先查 skip 原因分布；若是 no_pattern 占主导，多半是散射因子表缺失。")
+        return 3
+
     manifest_meta = {
-        "lib": "COD", "root": COD_DIR, "manifest": MANIFEST,
+        "lib": lib, "root": lib_dir, "manifest": MANIFEST,
         "manifest_built_at": meta_row.get("built_at", ""),
         "n_manifest": len(rows), "scope": args.scope,
     }
