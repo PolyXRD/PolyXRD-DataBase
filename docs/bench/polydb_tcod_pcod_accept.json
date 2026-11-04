@@ -1,0 +1,1768 @@
+{
+  "report": "docs/polyDB-TCOD-PCOD验收报告-20261020.md",
+  "generated_at": "2026-11-01 08:36:11",
+  "environment": {
+    "python": "3.10.11",
+    "numpy": "2.2.6",
+    "data_root": "D:/Project/XRD/sync-COD",
+    "reader": "D:/Project/XRD/PolyXRD/src/polyxrd/services/polydb.py"
+  },
+  "scope": [
+    "TCOD-Inorg-20261020",
+    "TCOD-Full-20261020",
+    "PCOD-Inorg-20261020"
+  ],
+  "requirements": [
+    "docs/外挂库格式规范-polyDB-v4.md（§1 容器/§2 口径/§3 row_idx/§4 段格式/§5 meta+§5.1 variant/§6 检索契约）",
+    "docs/polyDB重建方案-20261021.md（S6–S13 交付判据）",
+    "docs/polyDB-TCOD-PCOD构建报告-20261020.md（本次构建自述）",
+    "tools/README.md（--lib/--stamp/--max-skip-ratio/parts 隔离）",
+    "README.md §1.3（对外数字）"
+  ],
+  "gates": {
+    "structural": {
+      "tool": "tools/verify_polydb.py（纯标准库；含 sha256）",
+      "command": "python tools/verify_polydb.py polydb/TCOD-Inorg-20261020.polyDB polydb/TCOD-Full-20261020.polyDB polydb/PCOD-Inorg-20261020.polyDB",
+      "results": {
+        "TCOD-Inorg-20261020": "32 PASS / 0 FAIL / 0 WARN",
+        "TCOD-Full-20261020": "32 PASS / 0 FAIL / 0 WARN",
+        "PCOD-Inorg-20261020": "32 PASS / 0 FAIL / 0 WARN"
+      },
+      "conclusion": "全部 PASS"
+    },
+    "precision": {
+      "tool": "PolyXRD/scripts/polydb_verify.py（L1 结构+hash / L2 位图重算 / L3 源 CIF 抽样 200 相）",
+      "command": "python PolyXRD/scripts/polydb_verify.py <db> --sample 200 --json <out>",
+      "results": {
+        "TCOD-Inorg-20261020": {
+          "db": "polydb/TCOD-Inorg-20261020.polyDB",
+          "ok": true,
+          "failures": [],
+          "warnings": [],
+          "checks": {
+            "source_lib": "TCOD",
+            "phases": 46541,
+            "k": 100,
+            "hash_s": 0.1,
+            "entries": 46541,
+            "sites": 754606,
+            "avg_peaks": 81.0,
+            "bins_top_m": 40,
+            "sample_compared": 200,
+            "max_abs_d": 7.944290807415655e-07,
+            "max_abs_i": 0.007616386060135483
+          },
+          "meta": {
+            "format": "polyDB",
+            "schema_version": 1,
+            "variant": "tcod-inorg"
+          }
+        },
+        "TCOD-Full-20261020": {
+          "db": "polydb/TCOD-Full-20261020.polyDB",
+          "ok": true,
+          "failures": [],
+          "warnings": [],
+          "checks": {
+            "source_lib": "TCOD",
+            "phases": 359307,
+            "k": 100,
+            "hash_s": 0.6,
+            "entries": 359307,
+            "sites": 22178424,
+            "avg_peaks": 97.5,
+            "bins_top_m": 40,
+            "sample_compared": 200,
+            "max_abs_d": 9.490702623793368e-07,
+            "max_abs_i": 0.007611485419602104
+          },
+          "meta": {
+            "format": "polyDB",
+            "schema_version": 1,
+            "variant": "tcod-full"
+          }
+        },
+        "PCOD-Inorg-20261020": {
+          "db": "polydb/PCOD-Inorg-20261020.polyDB",
+          "ok": true,
+          "failures": [],
+          "warnings": [],
+          "checks": {
+            "source_lib": "PCOD",
+            "phases": 1061817,
+            "k": 100,
+            "hash_s": 1.3,
+            "entries": 1061817,
+            "sites": 32522180,
+            "avg_peaks": 100.0,
+            "bins_top_m": 40,
+            "sample_compared": 200,
+            "max_abs_d": 9.079815725954177e-07,
+            "max_abs_i": 0.007627447292406941
+          },
+          "meta": {
+            "format": "polyDB",
+            "schema_version": 1,
+            "variant": "pcod-inorg"
+          }
+        }
+      },
+      "conclusion": "三库 ok=true / failures=[] / warnings=[]"
+    },
+    "independent_audit": {
+      "tool": "一次性只读审计脚本（numpy + sqlite3；不调用 build_polydb / polydb_verify 的判据）",
+      "range": "峰矩阵全量逐行（3 库共 1,321 万相 ×100 槽）、元素位图全量、样本来源/位点/CIF 抽样",
+      "results": {
+        "TCOD-Inorg-20261020": {
+          "lib": "TCOD",
+          "scope": "inorg",
+          "phases": 46541,
+          "k": 100,
+          "variant": "tcod-inorg",
+          "schema_version": 1,
+          "peak_convention_matches_cod": true,
+          "source": {
+            "lib": "TCOD",
+            "root": "D:\\Project\\XRD\\sync-COD\\TCOD",
+            "manifest": "D:\\Project\\XRD\\sync-COD\\inorg_manifest.sqlite",
+            "manifest_built_at": "2026-10-20 01:52:04",
+            "n_manifest": 46943,
+            "scope": "inorg"
+          },
+          "build": {
+            "tool": "build_polydb.py",
+            "tool_version": "1.0",
+            "started_at": "2026-10-31 23:48:38",
+            "elapsed_s": 247.3,
+            "workers": 4,
+            "skipped": 402,
+            "skip_reasons": {
+              "no_pattern": 1,
+              "no_sites": 48,
+              "no_volume": 272,
+              "volume_too_large": 81
+            },
+            "attempted": 46943,
+            "unit_size": 2000
+          },
+          "section_bytes_match_disk": true,
+          "total_bytes_matches_sections": true,
+          "row_checks": {
+            "i_max_ne_65535": 0,
+            "i_not_desc": 0,
+            "d_zero_but_i": 0,
+            "d_pos_but_i_zero": 0,
+            "d_below_1A": 0,
+            "zero_not_tail": 0,
+            "npeaks_mismatch": 0
+          },
+          "peaks_nonzero_d": 3767731,
+          "d_range": [
+            1.0,
+            17.6573429107666
+          ],
+          "d_upper_bound": 17.659578607748895,
+          "meta_peaks": 3767731,
+          "meta_sites": 754606,
+          "sum_n_peaks": 3767731,
+          "journal_mode": "delete",
+          "page_size": 4096,
+          "sidecar_files": [],
+          "element_bitmap_mismatch_z": [],
+          "element_bitmap_total_phases": 150332,
+          "element_counts_from_entries": {
+            "O": 25372,
+            "N": 6977,
+            "S": 6809,
+            "C": 6614,
+            "P": 4822,
+            "Si": 4638,
+            "H": 4492,
+            "F": 3766,
+            "Cl": 3507,
+            "K": 3323,
+            "Na": 3208,
+            "B": 2974,
+            "Fe": 2804,
+            "Cu": 2693,
+            "Ca": 2523,
+            "Ba": 2513,
+            "Al": 2388,
+            "Se": 2227,
+            "Mg": 2061,
+            "Cs": 1928,
+            "Mn": 1927,
+            "Li": 1853,
+            "As": 1814,
+            "Ni": 1758,
+            "Zn": 1666,
+            "Te": 1640,
+            "V": 1552,
+            "Co": 1546,
+            "Ge": 1534,
+            "Sb": 1438,
+            "Sr": 1418,
+            "Rb": 1381,
+            "Mo": 1372,
+            "I": 1370,
+            "Pb": 1369,
+            "Ag": 1304,
+            "Sn": 1292,
+            "U": 1238,
+            "Br": 1236,
+            "Ga": 1214,
+            "Ti": 1184,
+            "Cr": 1057,
+            "In": 1049,
+            "La": 1048,
+            "Bi": 1044,
+            "W": 1011,
+            "Cd": 927,
+            "Nb": 863,
+            "Au": 777,
+            "Pt": 773,
+            "Zr": 760,
+            "Nd": 754,
+            "Ce": 747,
+            "Pd": 739,
+            "Y": 739,
+            "Hg": 695,
+            "Tl": 693,
+            "Gd": 611,
+            "Ru": 568,
+            "Ta": 565,
+            "Eu": 563,
+            "Yb": 556,
+            "Pr": 545,
+            "Sc": 535,
+            "Sm": 522,
+            "Rh": 520,
+            "Be": 473,
+            "Er": 446,
+            "Ir": 425,
+            "Tb": 419,
+            "Ho": 398,
+            "Dy": 377,
+            "Th": 376,
+            "Re": 364,
+            "Lu": 326,
+            "Tm": 273,
+            "Hf": 246,
+            "Os": 228,
+            "Pu": 146,
+            "Np": 141,
+            "Xe": 125,
+            "Tc": 69,
+            "Ne": 28,
+            "Pa": 23,
+            "He": 15,
+            "Kr": 13,
+            "Ac": 6,
+            "Ar": 5,
+            "Pm": 2,
+            "Po": 1,
+            "Rn": 1
+          },
+          "distinct_elements": [
+            "Ac",
+            "Ag",
+            "Al",
+            "Ar",
+            "As",
+            "Au",
+            "B",
+            "Ba",
+            "Be",
+            "Bi",
+            "Br",
+            "C",
+            "Ca",
+            "Cd",
+            "Ce",
+            "Cl",
+            "Co",
+            "Cr",
+            "Cs",
+            "Cu",
+            "Dy",
+            "Er",
+            "Eu",
+            "F",
+            "Fe",
+            "Ga",
+            "Gd",
+            "Ge",
+            "H",
+            "He",
+            "Hf",
+            "Hg",
+            "Ho",
+            "I",
+            "In",
+            "Ir",
+            "K",
+            "Kr",
+            "La",
+            "Li",
+            "Lu",
+            "Mg",
+            "Mn",
+            "Mo",
+            "N",
+            "Na",
+            "Nb",
+            "Nd",
+            "Ne",
+            "Ni",
+            "Np",
+            "O",
+            "Os",
+            "P",
+            "Pa",
+            "Pb",
+            "Pd",
+            "Pm",
+            "Po",
+            "Pr",
+            "Pt",
+            "Pu",
+            "Rb",
+            "Re",
+            "Rh",
+            "Rn",
+            "Ru",
+            "S",
+            "Sb",
+            "Sc",
+            "Se",
+            "Si",
+            "Sm",
+            "Sn",
+            "Sr",
+            "Ta",
+            "Tb",
+            "Tc",
+            "Te",
+            "Th",
+            "Ti",
+            "Tl",
+            "Tm",
+            "U",
+            "V",
+            "W",
+            "Xe",
+            "Y",
+            "Yb",
+            "Zn",
+            "Zr"
+          ],
+          "both_C_and_H_phases": 0,
+          "entries_rows": 46541,
+          "eids_missing_from_manifest": 0,
+          "eid_range": [
+            110000001,
+            140354736
+          ],
+          "manifest_lib_count": 362293,
+          "db_phases_is_inorg": 46541,
+          "provenance_sample": 40,
+          "provenance_bad": [],
+          "sites_sample": 15,
+          "sites_bad": [],
+          "sites_coord_range": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.9981656670570374,
+              0.9967838525772095,
+              0.997553288936615
+            ]
+          ],
+          "sites_occ_out_of_range": 0,
+          "bins_max_used_bin": 353,
+          "bins_empty_above_max": true,
+          "bins_overflow_nonempty": false
+        },
+        "TCOD-Full-20261020": {
+          "lib": "TCOD",
+          "scope": "full",
+          "phases": 359307,
+          "k": 100,
+          "variant": "tcod-full",
+          "schema_version": 1,
+          "peak_convention_matches_cod": true,
+          "source": {
+            "lib": "TCOD",
+            "root": "D:\\Project\\XRD\\sync-COD\\TCOD",
+            "manifest": "D:\\Project\\XRD\\sync-COD\\inorg_manifest.sqlite",
+            "manifest_built_at": "2026-10-20 01:52:04",
+            "n_manifest": 362293,
+            "scope": "full"
+          },
+          "build": {
+            "tool": "build_polydb.py",
+            "tool_version": "1.0",
+            "started_at": "2026-11-01 01:33:44",
+            "elapsed_s": 6258.7,
+            "workers": 4,
+            "skipped": 2986,
+            "skip_reasons": {
+              "no_pattern": 1226,
+              "no_sites": 150,
+              "no_volume": 717,
+              "volume_too_large": 893
+            },
+            "attempted": 362293,
+            "unit_size": 2000
+          },
+          "section_bytes_match_disk": true,
+          "total_bytes_matches_sections": true,
+          "row_checks": {
+            "i_max_ne_65535": 0,
+            "i_not_desc": 0,
+            "d_zero_but_i": 0,
+            "d_pos_but_i_zero": 0,
+            "d_below_1A": 0,
+            "zero_not_tail": 0,
+            "npeaks_mismatch": 0
+          },
+          "peaks_nonzero_d": 35039291,
+          "d_range": [
+            1.0,
+            17.659564971923828
+          ],
+          "d_upper_bound": 17.659578607748895,
+          "meta_peaks": 35039291,
+          "meta_sites": 22178424,
+          "sum_n_peaks": 35039291,
+          "journal_mode": "delete",
+          "page_size": 4096,
+          "sidecar_files": [],
+          "element_bitmap_mismatch_z": [],
+          "element_bitmap_total_phases": 1720691,
+          "element_counts_from_entries": {
+            "C": 319380,
+            "H": 317258,
+            "O": 263412,
+            "N": 249541,
+            "S": 68769,
+            "Cl": 68576,
+            "P": 48991,
+            "F": 42480,
+            "B": 24052,
+            "Br": 21826,
+            "Cu": 20986,
+            "Si": 18681,
+            "Fe": 17146,
+            "I": 12901,
+            "Zn": 12689,
+            "Co": 12073,
+            "Ni": 11770,
+            "Ru": 8521,
+            "Pd": 8042,
+            "Mn": 7592,
+            "Pt": 6821,
+            "Ag": 6408,
+            "Cd": 6398,
+            "Se": 6206,
+            "K": 5960,
+            "Mo": 5694,
+            "Na": 5653,
+            "Al": 5117,
+            "Au": 5004,
+            "Sn": 4763,
+            "Li": 4429,
+            "Ir": 4347,
+            "Rh": 4052,
+            "Ti": 3830,
+            "W": 3822,
+            "Sb": 3526,
+            "Mg": 3484,
+            "Ca": 3461,
+            "U": 3444,
+            "Cr": 3421,
+            "V": 3370,
+            "Pb": 3284,
+            "Re": 3196,
+            "As": 3178,
+            "Ge": 3174,
+            "Zr": 3024,
+            "Ba": 2965,
+            "Te": 2789,
+            "Ga": 2572,
+            "Cs": 2327,
+            "Hg": 2237,
+            "Bi": 2186,
+            "Dy": 2080,
+            "La": 1930,
+            "In": 1900,
+            "Eu": 1886,
+            "Y": 1865,
+            "Sr": 1851,
+            "Gd": 1797,
+            "Rb": 1667,
+            "Nd": 1618,
+            "Tb": 1568,
+            "Yb": 1504,
+            "Sm": 1482,
+            "Ce": 1480,
+            "Nb": 1440,
+            "Os": 1424,
+            "Er": 1217,
+            "Ta": 1178,
+            "Pr": 1027,
+            "Tl": 1009,
+            "Sc": 998,
+            "Ho": 817,
+            "Th": 780,
+            "Lu": 717,
+            "Hf": 702,
+            "Be": 603,
+            "Tm": 453,
+            "Tc": 214,
+            "Pu": 212,
+            "Np": 208,
+            "Xe": 134,
+            "Ne": 33,
+            "Pa": 24,
+            "He": 15,
+            "Kr": 14,
+            "Ar": 6,
+            "Ac": 6,
+            "Pm": 2,
+            "Po": 1,
+            "Rn": 1
+          },
+          "distinct_elements": [
+            "Ac",
+            "Ag",
+            "Al",
+            "Ar",
+            "As",
+            "Au",
+            "B",
+            "Ba",
+            "Be",
+            "Bi",
+            "Br",
+            "C",
+            "Ca",
+            "Cd",
+            "Ce",
+            "Cl",
+            "Co",
+            "Cr",
+            "Cs",
+            "Cu",
+            "Dy",
+            "Er",
+            "Eu",
+            "F",
+            "Fe",
+            "Ga",
+            "Gd",
+            "Ge",
+            "H",
+            "He",
+            "Hf",
+            "Hg",
+            "Ho",
+            "I",
+            "In",
+            "Ir",
+            "K",
+            "Kr",
+            "La",
+            "Li",
+            "Lu",
+            "Mg",
+            "Mn",
+            "Mo",
+            "N",
+            "Na",
+            "Nb",
+            "Nd",
+            "Ne",
+            "Ni",
+            "Np",
+            "O",
+            "Os",
+            "P",
+            "Pa",
+            "Pb",
+            "Pd",
+            "Pm",
+            "Po",
+            "Pr",
+            "Pt",
+            "Pu",
+            "Rb",
+            "Re",
+            "Rh",
+            "Rn",
+            "Ru",
+            "S",
+            "Sb",
+            "Sc",
+            "Se",
+            "Si",
+            "Sm",
+            "Sn",
+            "Sr",
+            "Ta",
+            "Tb",
+            "Tc",
+            "Te",
+            "Th",
+            "Ti",
+            "Tl",
+            "Tm",
+            "U",
+            "V",
+            "W",
+            "Xe",
+            "Y",
+            "Yb",
+            "Zn",
+            "Zr"
+          ],
+          "both_C_and_H_phases": 312766,
+          "entries_rows": 359307,
+          "eids_missing_from_manifest": 0,
+          "eid_range": [
+            110000001,
+            140354755
+          ],
+          "manifest_lib_count": 362293,
+          "db_phases_is_inorg": 46541,
+          "provenance_sample": 40,
+          "provenance_bad": [],
+          "sites_sample": 15,
+          "sites_bad": [],
+          "sites_coord_range": [
+            [
+              0.0,
+              7.498000195482746e-05,
+              0.0002926499873865396
+            ],
+            [
+              0.8116859793663025,
+              0.999879002571106,
+              0.9988451600074768
+            ]
+          ],
+          "sites_occ_out_of_range": 0,
+          "bins_max_used_bin": 353,
+          "bins_empty_above_max": true,
+          "bins_overflow_nonempty": false
+        },
+        "PCOD-Inorg-20261020": {
+          "lib": "PCOD",
+          "scope": "inorg",
+          "phases": 1061817,
+          "k": 100,
+          "variant": "pcod-inorg",
+          "schema_version": 1,
+          "peak_convention_matches_cod": true,
+          "source": {
+            "lib": "PCOD",
+            "root": "D:\\Project\\XRD\\sync-COD\\PCOD",
+            "manifest": "D:\\Project\\XRD\\sync-COD\\inorg_manifest.sqlite",
+            "manifest_built_at": "2026-10-20 01:52:04",
+            "n_manifest": 1061962,
+            "scope": "inorg"
+          },
+          "build": {
+            "tool": "build_polydb.py",
+            "tool_version": "1.0",
+            "started_at": "2026-11-01 03:51:22",
+            "elapsed_s": 8208.4,
+            "workers": 4,
+            "skipped": 145,
+            "skip_reasons": {
+              "no_pattern": 33,
+              "no_sites": 1,
+              "no_volume": 110,
+              "volume_too_large": 1
+            },
+            "attempted": 1061962,
+            "unit_size": 2000
+          },
+          "section_bytes_match_disk": true,
+          "total_bytes_matches_sections": true,
+          "row_checks": {
+            "i_max_ne_65535": 0,
+            "i_not_desc": 0,
+            "d_zero_but_i": 0,
+            "d_pos_but_i_zero": 0,
+            "d_below_1A": 0,
+            "zero_not_tail": 0,
+            "npeaks_mismatch": 0
+          },
+          "peaks_nonzero_d": 106160732,
+          "d_range": [
+            1.0,
+            17.659543991088867
+          ],
+          "d_upper_bound": 17.659578607748895,
+          "meta_peaks": 106160732,
+          "meta_sites": 32522180,
+          "sum_n_peaks": 106160732,
+          "journal_mode": "delete",
+          "page_size": 4096,
+          "sidecar_files": [],
+          "element_bitmap_mismatch_z": [],
+          "element_bitmap_total_phases": 2260423,
+          "element_counts_from_entries": {
+            "O": 1042665,
+            "Si": 954474,
+            "P": 44267,
+            "Al": 38406,
+            "V": 30518,
+            "S": 29864,
+            "B": 20346,
+            "F": 19152,
+            "Be": 18942,
+            "Ti": 17218,
+            "Ga": 11832,
+            "Mn": 9859,
+            "Nb": 8885,
+            "Zr": 8456,
+            "Fe": 2824,
+            "Cr": 2647,
+            "Re": 28,
+            "Ca": 26,
+            "Na": 14
+          },
+          "distinct_elements": [
+            "Al",
+            "B",
+            "Be",
+            "Ca",
+            "Cr",
+            "F",
+            "Fe",
+            "Ga",
+            "Mn",
+            "Na",
+            "Nb",
+            "O",
+            "P",
+            "Re",
+            "S",
+            "Si",
+            "Ti",
+            "V",
+            "Zr"
+          ],
+          "both_C_and_H_phases": 0,
+          "entries_rows": 1061817,
+          "eids_missing_from_manifest": 0,
+          "eid_range": [
+            21000000,
+            29585139
+          ],
+          "manifest_lib_count": 1061962,
+          "db_phases_is_inorg": 1061817,
+          "provenance_sample": 40,
+          "provenance_bad": [],
+          "sites_sample": 15,
+          "sites_bad": [],
+          "sites_coord_range": [
+            [
+              -0.9618300199508667,
+              -0.8673099875450134,
+              -0.010160000063478947
+            ],
+            [
+              1.3566700220108032,
+              1.3555799722671509,
+              1.0043100118637085
+            ]
+          ],
+          "sites_occ_out_of_range": 0,
+          "bins_max_used_bin": 353,
+          "bins_empty_above_max": true,
+          "bins_overflow_nonempty": false
+        }
+      },
+      "conclusion": "全部硬判据零违例"
+    },
+    "reader": {
+      "tool": "PolyXRD.services.polydb.PolyDatabase（真实消费侧 reader）",
+      "results": {
+        "TCOD-Inorg-20261020": {
+          "probe": [
+            true,
+            ""
+          ],
+          "available": true,
+          "is_ready": true,
+          "len": 46541,
+          "stats": {
+            "variant": "tcod-inorg",
+            "phases": 46541,
+            "peaks": 3767731,
+            "sites": 754606,
+            "k": 100,
+            "bins": 501,
+            "size_mb": 55.1
+          },
+          "stats_seconds": 0.0,
+          "self_recall": {
+            "hit@1": 4,
+            "hit@5": 5,
+            "of": 5
+          },
+          "items": [
+            {
+              "row_idx": 2,
+              "eid": 110000179,
+              "formula": "Br8 Li23 O8",
+              "n_peaks": 100,
+              "max_I": 1000.0,
+              "n_sites": 14,
+              "sites_ok": true,
+              "self_rank": 2,
+              "search_s": 0.529,
+              "ret_phase": true
+            },
+            {
+              "row_idx": 12949,
+              "eid": 140024558,
+              "formula": "Al16 Br16 La20",
+              "n_peaks": 100,
+              "max_I": 1000.0,
+              "n_sites": 5,
+              "sites_ok": true,
+              "self_rank": 1,
+              "search_s": 0.405,
+              "ret_phase": true
+            },
+            {
+              "row_idx": 24021,
+              "eid": 140084904,
+              "formula": "P4 Pb4 S16 Tl4",
+              "n_peaks": 100,
+              "max_I": 1000.0,
+              "n_sites": 6,
+              "sites_ok": true,
+              "self_rank": 1,
+              "search_s": 0.405,
+              "ret_phase": true
+            },
+            {
+              "row_idx": 33864,
+              "eid": 140278292,
+              "formula": "Ba6 Cl6 F12 In2",
+              "n_peaks": 100,
+              "max_I": 1000.0,
+              "n_sites": 4,
+              "sites_ok": true,
+              "self_rank": 1,
+              "search_s": 0.41,
+              "ret_phase": true
+            },
+            {
+              "row_idx": 46540,
+              "eid": 140354736,
+              "formula": "C8 N8 O8",
+              "n_peaks": 100,
+              "max_I": 1000.0,
+              "n_sites": 24,
+              "sites_ok": true,
+              "self_rank": 1,
+              "search_s": 0.452,
+              "ret_phase": true
+            }
+          ],
+          "element_filter": {
+            "allowed": [
+              "Br",
+              "Li",
+              "O"
+            ],
+            "seconds": 0.016,
+            "returned": 5,
+            "all_subset": true,
+            "self_in": true
+          },
+          "text_search": {
+            "query": "Br8Li23O8",
+            "seconds": 0.039,
+            "returned": 5,
+            "self_in": true
+          },
+          "text_search_by_eid": false,
+          "roundtrip": true
+        },
+        "TCOD-Full-20261020": {
+          "probe": [
+            true,
+            ""
+          ],
+          "available": true,
+          "is_ready": true,
+          "len": 359307,
+          "stats": {
+            "variant": "tcod-full",
+            "phases": 359307,
+            "peaks": 35039291,
+            "sites": 22178424,
+            "k": 100,
+            "bins": 501,
+            "size_mb": 714.7
+          },
+          "stats_seconds": 0.0,
+          "self_recall": {
+            "hit@1": 3,
+            "hit@5": 5,
+            "of": 5
+          },
+          "items": [
+            {
+              "row_idx": 2,
+              "eid": 110000179,
+              "formula": "Br8 Li23 O8",
+              "n_peaks": 100,
+              "max_I": 1000.0,
+              "n_sites": 14,
+              "sites_ok": true,
+              "self_rank": 2,
+              "search_s": 1.959,
+              "ret_phase": true
+            },
+            {
+              "row_idx": 94166,
+              "eid": 140087862,
+              "formula": "C144 H168 N40 Ni8 O8",
+              "n_peaks": 100,
+              "max_I": 1000.0,
+              "n_sites": 46,
+              "sites_ok": true,
+              "self_rank": 1,
+              "search_s": 1.726,
+              "ret_phase": true
+            },
+            {
+              "row_idx": 181461,
+              "eid": 140175658,
+              "formula": "C188 H204 Ge4 I4 N16",
+              "n_peaks": 100,
+              "max_I": 1000.0,
+              "n_sites": 208,
+              "sites_ok": true,
+              "self_rank": 1,
+              "search_s": 1.628,
+              "ret_phase": true
+            },
+            {
+              "row_idx": 268412,
+              "eid": 140263289,
+              "formula": "C56 H104 Cl8 P4 Rh4",
+              "n_peaks": 100,
+              "max_I": 1000.0,
+              "n_sites": 44,
+              "sites_ok": true,
+              "self_rank": 1,
+              "search_s": 1.845,
+              "ret_phase": true
+            },
+            {
+              "row_idx": 359306,
+              "eid": 140354755,
+              "formula": "C60 H68 N12 O8 S4",
+              "n_peaks": 100,
+              "max_I": 1000.0,
+              "n_sites": 152,
+              "sites_ok": true,
+              "self_rank": 4,
+              "search_s": 1.685,
+              "ret_phase": true
+            }
+          ],
+          "element_filter": {
+            "allowed": [
+              "Br",
+              "Li",
+              "O"
+            ],
+            "seconds": 0.078,
+            "returned": 5,
+            "all_subset": true,
+            "self_in": true
+          },
+          "text_search": {
+            "query": "Br8Li23O8",
+            "seconds": 0.348,
+            "returned": 5,
+            "self_in": true
+          },
+          "text_search_by_eid": false,
+          "roundtrip": true
+        },
+        "PCOD-Inorg-20261020": {
+          "probe": [
+            true,
+            ""
+          ],
+          "available": true,
+          "is_ready": true,
+          "len": 1061817,
+          "stats": {
+            "variant": "pcod-inorg",
+            "phases": 1061817,
+            "peaks": 106160732,
+            "sites": 32522180,
+            "k": 100,
+            "bins": 501,
+            "size_mb": 1481.6
+          },
+          "stats_seconds": 0.0,
+          "self_recall": {
+            "hit@1": 5,
+            "hit@5": 5,
+            "of": 5
+          },
+          "items": [
+            {
+              "row_idx": 0,
+              "eid": 21000000,
+              "formula": "Si O2",
+              "n_peaks": 100,
+              "max_I": 1000.0,
+              "n_sites": 15,
+              "sites_ok": true,
+              "self_rank": 1,
+              "search_s": 5.385,
+              "ret_phase": true
+            },
+            {
+              "row_idx": 265792,
+              "eid": 28102650,
+              "formula": "Si O2",
+              "n_peaks": 100,
+              "max_I": 1000.0,
+              "n_sites": 12,
+              "sites_ok": true,
+              "self_rank": 1,
+              "search_s": 4.252,
+              "ret_phase": true
+            },
+            {
+              "row_idx": 531221,
+              "eid": 29054519,
+              "formula": "Si O2",
+              "n_peaks": 100,
+              "max_I": 1000.0,
+              "n_sites": 22,
+              "sites_ok": true,
+              "self_rank": 1,
+              "search_s": 4.519,
+              "ret_phase": true
+            },
+            {
+              "row_idx": 796505,
+              "eid": 29319803,
+              "formula": "Si O2",
+              "n_peaks": 100,
+              "max_I": 1000.0,
+              "n_sites": 18,
+              "sites_ok": true,
+              "self_rank": 1,
+              "search_s": 4.197,
+              "ret_phase": true
+            },
+            {
+              "row_idx": 1061816,
+              "eid": 29585139,
+              "formula": "Si O2",
+              "n_peaks": 100,
+              "max_I": 1000.0,
+              "n_sites": 5,
+              "sites_ok": true,
+              "self_rank": 1,
+              "search_s": 3.892,
+              "ret_phase": true
+            }
+          ],
+          "element_filter": {
+            "allowed": [
+              "O",
+              "Si"
+            ],
+            "seconds": 3.513,
+            "returned": 5,
+            "all_subset": true,
+            "self_in": true
+          },
+          "text_search": {
+            "query": "O2Si",
+            "seconds": 0.503,
+            "returned": 10,
+            "self_in": true
+          },
+          "text_search_by_eid": false,
+          "roundtrip": true
+        },
+        "COD-Inorg-20261021": {
+          "probe": [
+            true,
+            ""
+          ],
+          "available": true,
+          "is_ready": true,
+          "len": 77500,
+          "stats": {
+            "variant": "cod-inorg",
+            "phases": 77500,
+            "peaks": 5962013,
+            "sites": 1005846,
+            "k": 100,
+            "bins": 501,
+            "size_mb": 89.9
+          },
+          "stats_seconds": 0.0,
+          "self_recall": {
+            "hit@1": 4,
+            "hit@5": 5,
+            "of": 5
+          },
+          "items": [
+            {
+              "row_idx": 0,
+              "eid": 1000003,
+              "formula": "C3 O6 Sr",
+              "n_peaks": 100,
+              "max_I": 1000.0,
+              "n_sites": 10,
+              "sites_ok": true,
+              "self_rank": 1,
+              "search_s": 0.602,
+              "ret_phase": true
+            },
+            {
+              "row_idx": 23386,
+              "eid": 1537207,
+              "formula": "O2 Si",
+              "n_peaks": 100,
+              "max_I": 1000.0,
+              "n_sites": 21,
+              "sites_ok": true,
+              "self_rank": 1,
+              "search_s": 0.599,
+              "ret_phase": true
+            },
+            {
+              "row_idx": 42221,
+              "eid": 4003875,
+              "formula": "Ba F4 Mo O2",
+              "n_peaks": 100,
+              "max_I": 1000.0,
+              "n_sites": 16,
+              "sites_ok": true,
+              "self_rank": 1,
+              "search_s": 0.55,
+              "ret_phase": true
+            },
+            {
+              "row_idx": 57696,
+              "eid": 7711975,
+              "formula": "Mo3 N5",
+              "n_peaks": 100,
+              "max_I": 1000.0,
+              "n_sites": 5,
+              "sites_ok": true,
+              "self_rank": 1,
+              "search_s": 0.581,
+              "ret_phase": true
+            },
+            {
+              "row_idx": 77495,
+              "eid": 9017922,
+              "formula": "Cl4 Cu O12 Pb5 Se4",
+              "n_peaks": 100,
+              "max_I": 1000.0,
+              "n_sites": 14,
+              "sites_ok": true,
+              "self_rank": 2,
+              "search_s": 0.535,
+              "ret_phase": true
+            }
+          ],
+          "element_filter": {
+            "allowed": [
+              "C",
+              "O",
+              "Sr"
+            ],
+            "seconds": 0.068,
+            "returned": 5,
+            "all_subset": true,
+            "self_in": true
+          },
+          "text_search": {
+            "query": "C3O6Sr",
+            "seconds": 0.076,
+            "returned": 1,
+            "self_in": true
+          },
+          "text_search_by_eid": true,
+          "roundtrip": true
+        }
+      },
+      "conclusion": "三库 probe/ready/stats/取相/取位点/自检索/元素过滤/文本检索/row↔eid 全通"
+    },
+    "mount": {
+      "tool": "polyxrd.services.db_mounts.detect_kind / add_mount / probe（隔离 USERPROFILE，不写用户配置）",
+      "results": {
+        "store": "D:\\Project\\XRD\\PolyXRD-DataBase\\_accept_tmp\\fakehome\\.polyxrd\\db_mounts.json",
+        "libs": {
+          "TCOD-Inorg-20261020": {
+            "detect_kind": "polydb",
+            "detect_note": "",
+            "mount_id": "polydb:b728d8ad",
+            "kind": "polydb",
+            "variant": "tcod-inorg",
+            "label": "TCOD-Inorg-20261020.polyDB",
+            "probe_ok": true,
+            "rows": 46541,
+            "size_mb": 55.1,
+            "detail": "variant=tcod-inorg"
+          },
+          "TCOD-Full-20261020": {
+            "detect_kind": "polydb",
+            "detect_note": "",
+            "mount_id": "polydb:165cb352",
+            "kind": "polydb",
+            "variant": "tcod-full",
+            "label": "TCOD-Full-20261020.polyDB",
+            "probe_ok": true,
+            "rows": 359307,
+            "size_mb": 714.7,
+            "detail": "variant=tcod-full"
+          },
+          "PCOD-Inorg-20261020": {
+            "detect_kind": "polydb",
+            "detect_note": "",
+            "mount_id": "polydb:c2d4c4a5",
+            "kind": "polydb",
+            "variant": "pcod-inorg",
+            "label": "PCOD-Inorg-20261020.polyDB",
+            "probe_ok": true,
+            "rows": 1061817,
+            "size_mb": 1481.6,
+            "detail": "variant=pcod-inorg"
+          }
+        },
+        "custom_mounts": [
+          [
+            "polydb:b728d8ad",
+            "tcod-inorg"
+          ],
+          [
+            "polydb:165cb352",
+            "tcod-full"
+          ],
+          [
+            "polydb:c2d4c4a5",
+            "pcod-inorg"
+          ]
+        ]
+      },
+      "conclusion": "三库均自动识别为 polydb，variant 各自正确，probe ok 且相数一致"
+    },
+    "cod_regression": {
+      "builder_default_lib": {
+        "command": "build_polydb.py --lib COD ... / build_polydb.py ...（省略 --lib）各建 20 相迷你库",
+        "result": "两产物 variant=cod-inorg、source.lib=COD、peaks_d sha256 相同（fdcdb776aeda…）",
+        "structural_verify": "25 PASS / 0 FAIL / 0 WARN（--no-hash）"
+      },
+      "verifier_backward_compat": {
+        "command": "PolyXRD/scripts/polydb_verify.py polydb/COD-Inorg-20261021.polyDB --sample 50",
+        "result": {
+          "ok": true,
+          "source_lib": "COD",
+          "sample_compared": 50,
+          "max_abs_d": 4.677282436915675e-07,
+          "max_abs_i": 0.007627073443245536
+        }
+      },
+      "cod_outputs_untouched": {
+        "COD-Inorg-20261021.polyDB": "mtime 2026-10-21 10:45:42 / 89,926,214 B",
+        "COD-Full-20261021.polyDB": "mtime 2026-10-21 16:23:15 / 1,107,655,264 B"
+      }
+    }
+  },
+  "format_conformance": {
+    "segments_present": "8/8 ×3（meta.json/index.sqlite/peaks_d.f32/peaks_i.u16/bins.u8/elem.u8/sites.bin/sites_off.i64）",
+    "schema_version": 1,
+    "peak_convention_matches_cod": true,
+    "variant_unique": [
+      "cod-full",
+      "cod-inorg",
+      "mp-20261031",
+      "pcod-inorg",
+      "tcod-full",
+      "tcod-inorg"
+    ],
+    "variant_count_unique": true,
+    "pcod_full_absent": true,
+    "journal_mode": "delete（无 -wal/-shm 侧车）",
+    "row_idx": "0..N-1 完整唯一排列（SQL COUNT(DISTINCT) 校验）"
+  },
+  "cross_checks": {
+    "tcod_inorg_subset_of_full": {
+      "common_eids": 46541,
+      "inorg_all_in_full": true,
+      "sampled": 50,
+      "peak_rows_identical": 50
+    },
+    "eids_all_in_manifest": {
+      "TCOD-Inorg-20261020": 0,
+      "TCOD-Full-20261020": 0,
+      "PCOD-Inorg-20261020": 0
+    },
+    "elements_bitmap_vs_entries_vs_meta": "118 行逐元素零差异",
+    "sites_vs_cif_sample": {
+      "TCOD-Inorg-20261020": 0,
+      "TCOD-Full-20261020": 0,
+      "PCOD-Inorg-20261020": 0
+    },
+    "provenance_vs_manifest_sample": {
+      "TCOD-Inorg-20261020": 0,
+      "TCOD-Full-20261020": 0,
+      "PCOD-Inorg-20261020": 0
+    }
+  },
+  "doc_cross_check": [
+    {
+      "lib": "TCOD-Inorg-20261020",
+      "field": "mib",
+      "claimed": 52.6,
+      "measured": 52.6,
+      "ok": true
+    },
+    {
+      "lib": "TCOD-Inorg-20261020",
+      "field": "phases",
+      "claimed": 46541,
+      "measured": 46541,
+      "ok": true
+    },
+    {
+      "lib": "TCOD-Inorg-20261020",
+      "field": "peaks",
+      "claimed": 3767731,
+      "measured": 3767731,
+      "ok": true
+    },
+    {
+      "lib": "TCOD-Inorg-20261020",
+      "field": "sites",
+      "claimed": 754606,
+      "measured": 754606,
+      "ok": true
+    },
+    {
+      "lib": "TCOD-Inorg-20261020",
+      "field": "skipped",
+      "claimed": 402,
+      "measured": 402,
+      "ok": true
+    },
+    {
+      "lib": "TCOD-Inorg-20261020",
+      "field": "elapsed_s",
+      "claimed": 247.3,
+      "measured": 247.3,
+      "ok": true
+    },
+    {
+      "lib": "TCOD-Inorg-20261020",
+      "field": "eid_range",
+      "claimed": [
+        110000001,
+        140354736
+      ],
+      "measured": [
+        110000001,
+        140354736
+      ],
+      "ok": true
+    },
+    {
+      "lib": "TCOD-Inorg-20261020",
+      "field": "elements",
+      "claimed": 91,
+      "measured": 91,
+      "ok": true
+    },
+    {
+      "lib": "TCOD-Inorg-20261020",
+      "field": "skip_reasons",
+      "claimed": {
+        "no_volume": 272,
+        "volume_too_large": 81,
+        "no_sites": 48,
+        "no_pattern": 1
+      },
+      "measured": {
+        "no_pattern": 1,
+        "no_sites": 48,
+        "no_volume": 272,
+        "volume_too_large": 81
+      },
+      "ok": true
+    },
+    {
+      "lib": "TCOD-Inorg-20261020",
+      "field": "skip_ratio_pct",
+      "claimed": 0.86,
+      "measured": 0.856,
+      "ok": true
+    },
+    {
+      "lib": "TCOD-Inorg-20261020",
+      "field": "peak_min_avg_max",
+      "claimed": [
+        2,
+        81.0,
+        100
+      ],
+      "measured": [
+        2,
+        81.0,
+        100
+      ],
+      "ok": true
+    },
+    {
+      "lib": "TCOD-Inorg-20261020",
+      "field": "self_recall(hit@1/hit@5)",
+      "claimed": [
+        3,
+        4
+      ],
+      "measured": [
+        4,
+        5
+      ],
+      "ok": false,
+      "note": "5 相抽样，相位集合与构建报告不同；绝对数不要求逐项相同"
+    },
+    {
+      "lib": "TCOD-Full-20261020",
+      "field": "mib",
+      "claimed": 681.6,
+      "measured": 681.6,
+      "ok": true
+    },
+    {
+      "lib": "TCOD-Full-20261020",
+      "field": "phases",
+      "claimed": 359307,
+      "measured": 359307,
+      "ok": true
+    },
+    {
+      "lib": "TCOD-Full-20261020",
+      "field": "peaks",
+      "claimed": 35039291,
+      "measured": 35039291,
+      "ok": true
+    },
+    {
+      "lib": "TCOD-Full-20261020",
+      "field": "sites",
+      "claimed": 22178424,
+      "measured": 22178424,
+      "ok": true
+    },
+    {
+      "lib": "TCOD-Full-20261020",
+      "field": "skipped",
+      "claimed": 2986,
+      "measured": 2986,
+      "ok": true
+    },
+    {
+      "lib": "TCOD-Full-20261020",
+      "field": "elapsed_s",
+      "claimed": 6258.7,
+      "measured": 6258.7,
+      "ok": true
+    },
+    {
+      "lib": "TCOD-Full-20261020",
+      "field": "eid_range",
+      "claimed": [
+        110000001,
+        140354755
+      ],
+      "measured": [
+        110000001,
+        140354755
+      ],
+      "ok": true
+    },
+    {
+      "lib": "TCOD-Full-20261020",
+      "field": "elements",
+      "claimed": 91,
+      "measured": 91,
+      "ok": true
+    },
+    {
+      "lib": "TCOD-Full-20261020",
+      "field": "skip_reasons",
+      "claimed": {
+        "no_volume": 717,
+        "volume_too_large": 893,
+        "no_sites": 150,
+        "no_pattern": 1226
+      },
+      "measured": {
+        "no_pattern": 1226,
+        "no_sites": 150,
+        "no_volume": 717,
+        "volume_too_large": 893
+      },
+      "ok": true
+    },
+    {
+      "lib": "TCOD-Full-20261020",
+      "field": "skip_ratio_pct",
+      "claimed": 0.83,
+      "measured": 0.824,
+      "ok": false
+    },
+    {
+      "lib": "TCOD-Full-20261020",
+      "field": "peak_min_avg_max",
+      "claimed": [
+        2,
+        97.5,
+        100
+      ],
+      "measured": [
+        2,
+        97.5,
+        100
+      ],
+      "ok": true
+    },
+    {
+      "lib": "TCOD-Full-20261020",
+      "field": "self_recall(hit@1/hit@5)",
+      "claimed": [
+        3,
+        4
+      ],
+      "measured": [
+        3,
+        5
+      ],
+      "ok": false,
+      "note": "5 相抽样，相位集合与构建报告不同；绝对数不要求逐项相同"
+    },
+    {
+      "lib": "PCOD-Inorg-20261020",
+      "field": "mib",
+      "claimed": 1413.0,
+      "measured": 1413.0,
+      "ok": true
+    },
+    {
+      "lib": "PCOD-Inorg-20261020",
+      "field": "phases",
+      "claimed": 1061817,
+      "measured": 1061817,
+      "ok": true
+    },
+    {
+      "lib": "PCOD-Inorg-20261020",
+      "field": "peaks",
+      "claimed": 106160732,
+      "measured": 106160732,
+      "ok": true
+    },
+    {
+      "lib": "PCOD-Inorg-20261020",
+      "field": "sites",
+      "claimed": 32522180,
+      "measured": 32522180,
+      "ok": true
+    },
+    {
+      "lib": "PCOD-Inorg-20261020",
+      "field": "skipped",
+      "claimed": 145,
+      "measured": 145,
+      "ok": true
+    },
+    {
+      "lib": "PCOD-Inorg-20261020",
+      "field": "elapsed_s",
+      "claimed": 8208.4,
+      "measured": 8208.4,
+      "ok": true
+    },
+    {
+      "lib": "PCOD-Inorg-20261020",
+      "field": "eid_range",
+      "claimed": [
+        21000000,
+        29585139
+      ],
+      "measured": [
+        21000000,
+        29585139
+      ],
+      "ok": true
+    },
+    {
+      "lib": "PCOD-Inorg-20261020",
+      "field": "elements",
+      "claimed": 19,
+      "measured": 19,
+      "ok": true
+    },
+    {
+      "lib": "PCOD-Inorg-20261020",
+      "field": "skip_reasons",
+      "claimed": {
+        "no_volume": 110,
+        "volume_too_large": 1,
+        "no_sites": 1,
+        "no_pattern": 33
+      },
+      "measured": {
+        "no_pattern": 33,
+        "no_sites": 1,
+        "no_volume": 110,
+        "volume_too_large": 1
+      },
+      "ok": true
+    },
+    {
+      "lib": "PCOD-Inorg-20261020",
+      "field": "skip_ratio_pct",
+      "claimed": 0.014,
+      "measured": 0.014,
+      "ok": true
+    },
+    {
+      "lib": "PCOD-Inorg-20261020",
+      "field": "peak_min_avg_max",
+      "claimed": [
+        12,
+        100.0,
+        100
+      ],
+      "measured": [
+        12,
+        100.0,
+        100
+      ],
+      "ok": true
+    },
+    {
+      "lib": "PCOD-Inorg-20261020",
+      "field": "self_recall(hit@1/hit@5)",
+      "claimed": [
+        5,
+        5
+      ],
+      "measured": [
+        5,
+        5
+      ],
+      "ok": true,
+      "note": "5 相抽样，相位集合与构建报告不同；绝对数不要求逐项相同"
+    }
+  ],
+  "findings": [
+    {
+      "id": "F1",
+      "severity": "观察",
+      "scope": "reader 兼容性",
+      "title": "search_entries(纯数字 eid) 对 8/9 位 eid 不生效",
+      "detail": "PolyXRD 的 _parse_eid_query 只认 7 位（COD）/96-97 前缀；TCOD(110000179)/PCOD(21000000) 的 eid 走 LIKE 查不到。get_phase/row_of_eid 正常（按 eid 精确 SQL）。不影响 polyDB 数据本身，接入界面时需要给 reader 补一条『任意位数按 eid 精确查』。"
+    },
+    {
+      "id": "F2",
+      "severity": "文档",
+      "scope": "构建报告 §3.3",
+      "title": "search_entries 实际不是 FTS5",
+      "detail": "reader 的 search_entries 走 SQL LIKE；entries_fts 表只是存在且行数一致（32 项校验含它），当前无调用方。建议把报告的『（FTS5）』改为『（SQL LIKE）』。"
+    },
+    {
+      "id": "F3",
+      "severity": "文档",
+      "scope": "README §1.3 / 构建报告",
+      "title": "『构建于 2026-10-31』只对 TCOD-Inorg 成立",
+      "detail": "按『目录 mtime − elapsed_s』反推实际构建区间：TCOD-Inorg 10-31 23:44→23:48、TCOD-Full 10-31 23:49→11-01 01:33、PCOD 11-01 01:34→03:51。建议写『构建于 2026-10-31 ~ 11-01』（注意 F10：started_at 字段本身不是开始时间）。"
+    },
+    {
+      "id": "F4",
+      "severity": "规范",
+      "scope": "规范 §4.5",
+      "title": "位点坐标写『0..1』与实测不符（CIF 原样可越胞）",
+      "detail": "规范 §4.5 写分数坐标 (0..1)；实测 PCOD 15%/300 相、TCOD-Inorg 2.3%、COD-Inorg 32%、COD-Full 87% 有越胞坐标（例 PCOD x=-0.96）。存储就是 CIF 原样（reader 文档也明确『非对称单位、CIF 原样』），下游按对称展开。建议规范改为『CIF 分数的原样值，可越胞』，避免第三方按 0..1 校验误判。"
+    },
+    {
+      "id": "F5",
+      "severity": "观察",
+      "scope": "元数据",
+      "title": "tier / dup_group 三库全 0",
+      "detail": "TCOD/PCOD 未标 tier（MP 库标了 tier=2）；dup_group 未做同相去重。与 COD 两库一致，非本次缺陷。若 UI 将来按 tier 区分理论/实验，可在 build 里按 --lib 落 1/2。"
+    },
+    {
+      "id": "F6",
+      "severity": "观察",
+      "scope": "体积/去重",
+      "title": "精确峰型重复行极少，无需去重",
+      "detail": "整行 600 B 哈希 + 逐字节复核：TCOD-Inorg 357/46,541（0.77%）、TCOD-Full 2,030/359,307（0.56%）、PCOD 1/1,061,817（0.0001%）。formula+SG+volume 聚类在 PCOD 达 38%，但多为同式同群不同构型，不是同相复本。"
+    },
+    {
+      "id": "F7",
+      "severity": "待办",
+      "scope": "发布",
+      "title": "S13/S16/发版未做",
+      "detail": "未打 zip、未生成 SHA256SUMS.txt、未在外挂目录/「自定义挂载」GUI 冒烟；README 已如实写『构建中，尚未发布』。三库 variant 唯一，可安全共存。"
+    },
+    {
+      "id": "F8",
+      "severity": "观察",
+      "scope": "性能",
+      "title": "检索耗时与报告同量级",
+      "detail": "本机自检索覆盖 100 峰：TCOD-Inorg 0.40–0.53 s、TCOD-Full 1.6–2.0 s、PCOD 3.9–5.4 s（构建报告为 0.35/1.3/3.4 s；本次有并发读盘）。"
+    },
+    {
+      "id": "F9",
+      "severity": "文档",
+      "scope": "构建报告 §1 / README §1.3",
+      "title": "TCOD-Full 跳过率 0.83% 应为 0.82%",
+      "detail": "2,986 / 362,293 = 0.8242%，四舍五入 0.82%，报告写 0.83%。同表 TCOD-Inorg 0.86%（0.8564%）与 PCOD 0.014%（0.0137%）无误。"
+    },
+    {
+      "id": "F10",
+      "severity": "缺陷（既有，非本次引入）",
+      "scope": "build_polydb.py 元数据",
+      "title": "meta.build.started_at 语义错位（记的是 worker 阶段结束时刻）",
+      "detail": "build_polydb.py 在 worker 循环结束后才 datetime.now()，而 elapsed_s 也只量到这一刻（不含 merge/落盘）；实测三库 started_at 与目录 mtime 仅差 1–18 s（merge 时长），真实开始 = started_at − elapsed_s。COD 两库同样受影响（HEAD 版本即如此），MP 库用另一支构建器、不受影响。数据不受影响；建议用 t0 的 datetime 写 started_at，并另记 finished_at / 含 merge 的总耗时。"
+    }
+  ],
+  "commands": [
+    "python tools/verify_polydb.py polydb/TCOD-Inorg-20261020.polyDB polydb/TCOD-Full-20261020.polyDB polydb/PCOD-Inorg-20261020.polyDB",
+    "python D:/Project/XRD/PolyXRD/scripts/polydb_verify.py polydb/<lib>.polyDB --sample 200 --json <out>.json",
+    "python D:/Project/XRD/PolyXRD/scripts/polydb_verify.py polydb/COD-Inorg-20261021.polyDB --sample 50",
+    "python tools/build_polydb.py --lib COD --scope inorg --limit 20 --out <tmp> --force --workers 2",
+    "python tools/build_polydb.py --scope inorg --limit 20 --out <tmp> --force --workers 2",
+    "USERPROFILE=<tmp> python -c '... db_mounts.detect_kind/add_mount/probe ...'"
+  ]
+}
