@@ -1,72 +1,85 @@
 # PolyXRD-DataBase
 
-**PolyXRD 外挂物相库（polyDB 格式）的构建代码、格式规范与发布产物。**
+**Build code, format specification and release artifacts for the PolyXRD external phase database (polyDB format).**
 
-本仓库只放**代码与文档**；数据库本体以 [Releases](../../releases) 里的压缩包分发（单库 48 MB / 710 MB，
-不入 git 历史）。数据源为 [Crystallography Open Database (COD)](http://www.crystallography.net/cod/)
-与 [Materials Project](https://materialsproject.org)（CC BY 4.0）；本仓库不转售、不改造原始 CIF，
-只做峰位/强度计算与索引打包。
+This repository contains **only code and documentation**; the database itself is distributed as compressed
+packages in [Releases](../../releases) (48 MB / 710 MB per database, not committed to git history). The
+data sources are [Crystallography Open Database (COD)](http://www.crystallography.net/cod/) and
+[Materials Project](https://materialsproject.org) (CC BY 4.0); this repository does not resell or modify
+the original CIFs, and only performs peak-position/intensity calculation and index packaging.
 
 ---
 
-## 1. 发布产物（Release `20261020` / `20261021` / `20261031`）
+## 1. Release artifacts (Release `20261020` / `20261021` / `20261031`)
 
-### 1.1 MP-20261031（Materials Project 外挂库）
+### 1.1 MP-20261031 (Materials Project external database)
 
-| 库 | 物相数 | 峰数 | 位点数 | 解压后 | Release 压缩包 | SHA-256 (zip) |
+| Database | Phase count | Peak count | Site count | Uncompressed | Release package | SHA-256 (zip) |
 |---|---|---|---|---|---|---|
-| **MP** | 155,204 | 12,705,201 | 2,407,784 | 187,675,763 B（179.0 MiB） | `MP-20261031.polyDB.zip`（106.5 MB） | `ccfccf53…a16c22` |
+| **MP** | 155,204 | 12,705,201 | 2,407,784 | 187,675,763 B (179.0 MiB) | `MP-20261031.polyDB.zip` (106.5 MB) | `ccfccf53…a16c22` |
 
-- 数据源：[Materials Project](https://materialsproject.org) summary（2025-09-25，CC BY 4.0）。
-  210,579 条记录按 reduced formula 去重、每组保留最低 `energy_above_hull` 构型，得 155,204 相。
-- MP 的 CIF 是 pymatgen 导出的 **P1 原胞**：构建器做「原胞 → 常规胞 → 非对称单位」，
-  峰在常规胞上计算，避免 F/I/C 心晶格把等价反射拆成假峰（详见 `tools/build_mp_polydb.py` 的文档字符串）。
-- `entries.eid` = MP 编号（`mp-3207172` → `3207172`），`mvc-*` 条目落 9 亿号段；
-  `tier=2`（DFT 理论结构，非实验 PDF 卡）。
-- 构建 / 校验：`tools/build_mp_polydb.py`、`tools/verify_mp_polydb.py`；
-  实测结构校验 32/32 PASS、L3 回算 max|Δd|=8.1×10⁻⁷ Å / max|ΔI|=0.015（100 相）。
+- Data source: [Materials Project](https://materialsproject.org) summary (2025-09-25, CC BY 4.0).
+  210,579 records deduplicated by reduced formula, keeping the lowest `energy_above_hull` configuration
+  per group, giving 155,204 phases.
+- MP's CIFs are **P1 primitive cells** exported by pymatgen: the builder performs
+  "primitive cell → conventional cell → asymmetric unit", and peaks are computed on the conventional
+  cell, to avoid F/I/C-centered lattices splitting equivalent reflections into spurious peaks (see the
+  docstring of `tools/build_mp_polydb.py` for details).
+- `entries.eid` = MP number (`mp-3207172` → `3207172`); `mvc-*` entries fall in the 900-million
+  number range; `tier=2` (DFT theoretical structures, not experimental PDF cards).
+- Build / validation: `tools/build_mp_polydb.py`, `tools/verify_mp_polydb.py`;
+  measured structure validation 32/32 PASS, L3 recomputation
+  max|Δd|=8.1×10⁻⁷ Å / max|ΔI|=0.015 (100 phases).
 
-### 1.2 COD-20261021（COD 无机 / 全库）
+### 1.2 COD-20261021 (COD inorganic / full database)
 
-| 库 | 物相数 | 峰数 | 位点数 | 解压后 | Release 压缩包 | SHA-256 (zip) |
+| Database | Phase count | Peak count | Site count | Uncompressed | Release package | SHA-256 (zip) |
 |---|---|---|---|---|---|---|
-| **COD-Inorg** | 77,500 | 5,962,013 | 1,005,846 | 89,926,214 B（85.8 MiB） | `COD-Inorg-20261021.polyDB.zip`（48.1 MB） | `d9e57d11…33cf14` |
-| **COD-Full** | 521,361 | 50,328,800 | 36,315,927 | 1,107,655,264 B（1056.3 MiB） | `COD-Full-20261021.polyDB.zip`（710.3 MB） | `191246b7…1bbd6e` |
+| **COD-Inorg** | 77,500 | 5,962,013 | 1,005,846 | 89,926,214 B (85.8 MiB) | `COD-Inorg-20261021.polyDB.zip` (48.1 MB) | `d9e57d11…33cf14` |
+| **COD-Full** | 521,361 | 50,328,800 | 36,315,927 | 1,107,655,264 B (1056.3 MiB) | `COD-Full-20261021.polyDB.zip` (710.3 MB) | `191246b7…1bbd6e` |
 
-> 完整校验值见 Release 附带的 `SHA256SUMS.txt`（同时给出 zip 与解压后各段的 sha256，
-> 后者已写进各库自己的 `meta.json`）。
+> Full checksum values are in the `SHA256SUMS.txt` attached to the Release (it gives the sha256 of
+> both the zip and each uncompressed segment; the latter is also written into each database's own
+> `meta.json`).
 
-- `COD-Inorg` = COD 中判为无机的条目（不含 C，或含 C 但不含 H）；`COD-Full` = COD 全量。
-  两者互不包含，**选一个装即可**，PolyXRD 会自动识别 `meta.variant`（`cod-inorg` / `cod-full`）。
-- 命名里的 `20261021` 是**构建日期**；源数据快照时间见 `meta.json.source.manifest_built_at`
-  （2026-10-20 01:52:04）。
-- 解压后得到同名 `.polyDB` **目录**，可直接挂载（本地盘/移动硬盘/NAS 均可），
-  **不支持**在 zip 内直接 mmap。
+- `COD-Inorg` = COD entries judged inorganic (no C, or containing C but no H); `COD-Full` = the full
+  COD. The two are mutually exclusive, **install just one**, and PolyXRD automatically recognizes
+  `meta.variant` (`cod-inorg` / `cod-full`).
+- The `20261021` in the name is the **build date**; the source data snapshot time is in
+  `meta.json.source.manifest_built_at` (2026-10-20 01:52:04).
+- After extraction you get a `.polyDB` **directory** of the same name that can be mounted directly
+  (local disk / external drive / NAS all work); direct mmap inside the zip is **not supported**.
 
 ```bash
-# 使用方式（任一目录放到任意路径后，在 PolyXRD 里指向该 .polyDB 目录）
+# Usage (put any directory at any path, then point PolyXRD at that .polyDB directory)
 unzip COD-Inorg-20261021.polyDB.zip
 python tools/verify_polydb.py COD-Inorg-20261021.polyDB
 ```
 
-### 1.3 TCOD / PCOD-20261020（TCOD 无机 / 全库 + PCOD 无机）
+### 1.3 TCOD / PCOD-20261020 (TCOD inorganic / full database + PCOD inorganic)
 
-| 库 | 物相数 | 峰数 | 位点数 | 解压后 | Release 压缩包 | SHA-256 (zip) |
+| Database | Phase count | Peak count | Site count | Uncompressed | Release package | SHA-256 (zip) |
 |---|---|---|---|---|---|---|
-| **TCOD-Inorg** | 46,541 | 3,767,731 | 754,606 | 55,138,528 B（52.6 MiB） | `TCOD-Inorg-20261020.polyDB.zip`（31.5 MB） | `783bc4f6…cc4ead` |
-| **TCOD-Full** | 359,307 | 35,039,291 | 22,178,424 | 714,704,055 B（681.6 MiB） | `TCOD-Full-20261020.polyDB.zip`（466.6 MB） | `81ae572f…56ab47` |
-| **PCOD-Inorg** | 1,061,817 | 106,160,732 | 32,522,180 | 1,481,618,146 B（1413.0 MiB） | `PCOD-Inorg-20261020.polyDB.zip`（936.9 MB） | `898dc822…89310f` |
+| **TCOD-Inorg** | 46,541 | 3,767,731 | 754,606 | 55,138,528 B (52.6 MiB) | `TCOD-Inorg-20261020.polyDB.zip` (31.5 MB) | `783bc4f6…cc4ead` |
+| **TCOD-Full** | 359,307 | 35,039,291 | 22,178,424 | 714,704,055 B (681.6 MiB) | `TCOD-Full-20261020.polyDB.zip` (466.6 MB) | `81ae572f…56ab47` |
+| **PCOD-Inorg** | 1,061,817 | 106,160,732 | 32,522,180 | 1,481,618,146 B (1413.0 MiB) | `PCOD-Inorg-20261020.polyDB.zip` (936.9 MB) | `898dc822…89310f` |
 
-> 完整校验值见 Release 附带的 `SHA256SUMS.txt`；各库内部 8 段的 sha256 写在自身 `meta.json.sections`。
+> Full checksum values are in the `SHA256SUMS.txt` attached to the Release; the sha256 of the 8
+> segments inside each database is written in its own `meta.json.sections`.
 
-- `TCOD-Inorg` / `TCOD-Full` = TCOD（理论计算结构）的无机子集 / 全量（Full 多出的主要是 C/H 有机相，各约 32 万相）；
-  `PCOD-Inorg` = PCOD 全量 —— **PCOD 没有 `Full` 变体**：清单里 1,061,962 条
-  `is_inorg` 全为 1（GRINSP 预测集本身不含有机相），`pcod-full` 会与 `pcod-inorg` 逐字节相同。
-- `variant` 分别为 `tcod-inorg` / `tcod-full` / `pcod-inorg`，互不相同，可与 COD 库共存。
-  PolyXRD v4.x 的内置槽位只登记 `cod-inorg` / `cod-full`，这三个库走挂载面板「自定义挂载」。
-- 命名里的 `20261020` 是**官方库同步日期**（非构建日；构建于 2026-10-31）。
-- 三库均通过三重验收（结构 32/32、抽样 200 相回算 max|Δd| ≤ 9.5×10⁻⁷ Å、PolyXRD reader 挂载 + 检索），
-  细节见 [`docs/polyDB-TCOD-PCOD构建报告-20261020.md`](docs/polyDB-TCOD-PCOD构建报告-20261020.md)。
+- `TCOD-Inorg` / `TCOD-Full` = the inorganic subset / the full TCOD (theoretical calculated
+  structures) (the extra part of Full is mainly C/H organic phases, about 320,000 phases each);
+  `PCOD-Inorg` = the full PCOD — **PCOD has no `Full` variant**: the 1,061,962 `is_inorg`
+  entries in the manifest are all 1 (the GRINSP prediction set itself contains no organic phases),
+  so `pcod-full` would be byte-for-byte identical to `pcod-inorg`.
+- `variant` is `tcod-inorg` / `tcod-full` / `pcod-inorg` respectively, all different, and they can
+  coexist with the COD databases. PolyXRD v4.x built-in slots only register `cod-inorg` /
+  `cod-full`; these three databases go through "Custom mount" in the mount panel.
+- The `20261020` in the name is the **official database sync date** (not the build date; built on
+  2026-10-31).
+- All three databases passed triple acceptance (structure 32/32, 200-phase sampled recomputation
+  max|Δd| ≤ 9.5×10⁻⁷ Å, PolyXRD reader mount + search); details in
+  [polyDB TCOD/PCOD build report 2026-10-20 (Chinese)](docs/polyDB-TCOD-PCOD构建报告-20261020.md).
 
 ```bash
 python tools/build_polydb.py --lib TCOD --scope inorg --stamp 20261020 --workers 4
@@ -76,223 +89,251 @@ python tools/build_polydb.py --lib PCOD --scope inorg --stamp 20261020 --workers
 
 ---
 
-## 2. polyDB 是什么
+## 2. What polyDB is
 
-一个 `.polyDB` 是一个**目录容器**，把"检索要用的峰表 + 位图倒排 + 精修要用的原子位点"分成
-定长数组段，用 mmap 按需读取，因此 52 万相也能做到"打开即用、检索秒级"。
+A `.polyDB` is a **directory container** that splits "the peak table used for search + the bitmap
+inverted index + the atomic sites used for refinement" into fixed-length array segments, read on
+demand via mmap, so even 520,000 phases can be "ready to use on open, with second-level search".
 
 ```
 COD-Inorg-20261021.polyDB/
-├── meta.json        自描述：版本 / 峰口径 / 各段 shape+bytes+sha256
-├── index.sqlite     条目元数据（公式/空间群/晶胞/密度/元素/CIF 相对路径）+ FTS5
-├── peaks_d.f32      (N×100) float32  峰位 d，行内按强度降序
-├── peaks_i.u16      (N×100) uint16   强度量化（u16/65535*1000）
-├── bins.u8          (501×⌈N/8⌉)       d 分箱位图倒排（0.05 Å/箱，索引每相最强 40 条）
-├── elem.u8          (118×⌈N/8⌉)       元素位图（Z=1..118）
-├── sites.bin        原子位点流（17 B/点：Z + xyz + occ）
-└── sites_off.i64    (N+1) int64      指向 sites.bin 的偏移
+├── meta.json        self-describing: version / peak convention / shape+bytes+sha256 of each segment
+├── index.sqlite     entry metadata (formula/space group/cell/density/elements/CIF relative path) + FTS5
+├── peaks_d.f32      (N×100) float32  peak position d, sorted by intensity descending within each row
+├── peaks_i.u16      (N×100) uint16   intensity quantization (u16/65535*1000)
+├── bins.u8          (501×⌈N/8⌉)       d-bin bitmap inverted index (0.05 Å/bin, indexes the strongest 40 per phase)
+├── elem.u8          (118×⌈N/8⌉)       element bitmap (Z=1..118)
+├── sites.bin        atomic-site stream (17 B/site: Z + xyz + occ)
+└── sites_off.i64    (N+1) int64      offsets into sites.bin
 ```
 
-**峰口径**（写死进 `meta.json.peak_convention`，与本仓库代码一致）：
+**Peak convention** (hard-coded into `meta.json.peak_convention`, consistent with this repository's code):
 
-| 项 | 取值 |
+| Item | Value |
 |---|---|
-| 波长 λ | 1.5406 Å（Cu Kα1） |
-| 2θ 范围 | 5.0 – 100.76°（等价 `d ≥ 1.0 Å`） |
-| 等价反射 | 按 2θ 合并（含多重性），与 `fastxrd` 一致 |
-| 强度归一 | 每相最强峰 = 1000 |
-| 峰选择 | **按强度降序取前 K=100 条**（不是按 d 截断） |
-| 温度因子 | 无 Debye-Waller（= pymatgen 默认口径） |
-| 阵列 | 全部 little-endian，不支持大端 |
+| Wavelength λ | 1.5406 Å (Cu Kα1) |
+| 2θ range | 5.0 – 100.76° (equivalent to `d ≥ 1.0 Å`) |
+| Equivalent reflections | merged by 2θ (including multiplicity), consistent with `fastxrd` |
+| Intensity normalization | strongest peak per phase = 1000 |
+| Peak selection | **take the top K=100 by intensity descending** (not truncated by d) |
+| Temperature factor | no Debye-Waller (= pymatgen default convention) |
+| Arrays | all little-endian, big-endian not supported |
 
-完整字段级规范见 [`docs/外挂库格式规范-polyDB-v4.md`](docs/外挂库格式规范-polyDB-v4.md)，
-设计取舍与实测数据见 [`docs/polyDB重建方案-20261021.md`](docs/polyDB重建方案-20261021.md)。
+For the complete field-level specification see [polyDB v4 format specification (Chinese)](docs/外挂库格式规范-polyDB-v4.md);
+for design trade-offs and measured data see [polyDB rebuild plan 2026-10-21 (Chinese)](docs/polyDB重建方案-20261021.md).
 
-> ⚠️ **行号铁律**：数组段行号必须走 `index.sqlite.entries.row_idx` 列，**不能**用 `eid-1`。
-> `eid` 是 `INTEGER PRIMARY KEY`（= rowid），COD 编号从 1,000,000 起，
-> 两者不相等（实测全库 0 行成立）。写第三方 reader 时最容易在这里整体错位。
+> ⚠️ **The iron rule for row numbers**: array-segment row numbers must come from the
+> `index.sqlite.entries.row_idx` column, **must not** use `eid-1`.
+> `eid` is an `INTEGER PRIMARY KEY` (= rowid); COD numbers start at 1,000,000,
+> so the two are not equal (measured across the entire database: 0 rows where they match). When
+> writing a third-party reader, this is the easiest place to get a wholesale misalignment.
 
 ---
 
-## 3. 从零构建
+## 3. Building from scratch
 
-### 3.1 环境
+### 3.1 Environment
 
-| 依赖 | 要求 | 说明 |
+| Dependency | Requirement | Notes |
 |---|---|---|
-| Python | 3.10+ | 实测 3.10.11 |
-| numpy | 必需 | 峰计算与数组段写入 |
-| pymatgen | 可选 | 装了就用它自带的散射因子表，保证与官方口径完全一致；否则读 `_atomic_scattering_params.json` |
-| 磁盘 | 约 2× 库体积 | Full 库构建峰值约需 3 GB 临时空间（`_polydb_parts/`） |
-| 内存 | 8 GB 级 | 合并阶段 `peaks_d` 走 memmap，不整体驻留 |
+| Python | 3.10+ | tested on 3.10.11 |
+| numpy | required | peak calculation and array-segment writing |
+| pymatgen | optional | if installed, uses its built-in scattering-factor table to guarantee exact agreement with the official convention; otherwise reads `_atomic_scattering_params.json` |
+| Disk | about 2× the database size | Full database build peaks at about 3 GB of temporary space (`_polydb_parts/`) |
+| Memory | 8 GB class | during the merge phase `peaks_d` uses memmap and is not fully resident |
 
 ```bash
 pip install numpy
-# 可选：pip install pymatgen
+# Optional: pip install pymatgen
 ```
 
-### 3.2 准备 COD 数据
+### 3.2 Preparing the COD data
 
-代码不下载数据。**源数据不在本仓库**：2026-10-23 起源数据迁出，统一放在
+The code does not download data. **The source data is not in this repository**: as of 2026-10-23 the
+source data was moved out and is kept in one place:
 
 ```
-D:/Project/XRD/sync-COD/          ← 数据根，PolyXRD / XinMatch 两库共用
-├── COD/                    必需：COD 的 CIF（3 级布局，如 COD/1/00/00/1000000.cif）
-├── PCOD/                   PCOD 的 CIF（2 级布局，全为无机：GRINSP 预测集）
-├── TCOD/                   TCOD 的 CIF（3 级布局，含粉末/有机条目）
-├── inorg_cif/{COD,PCOD,TCOD}/   无机子集副本（由 scan_inorg.py 生成）
-└── inorg_manifest.sqlite        逐条清单（由 scan_inorg.py 生成）
+D:/Project/XRD/sync-COD/          ← data root, shared by the PolyXRD and XinMatch databases
+├── COD/                    required: COD CIFs (3-level layout, e.g. COD/1/00/00/1000000.cif)
+├── PCOD/                   PCOD CIFs (2-level layout, all inorganic: GRINSP prediction set)
+├── TCOD/                   TCOD CIFs (3-level layout, including powder/organic entries)
+├── inorg_cif/{COD,PCOD,TCOD}/   inorganic subset copies (generated by scan_inorg.py)
+└── inorg_manifest.sqlite        per-file manifest (generated by scan_inorg.py)
 ```
 
-这个目录本身也有仓库：[**PolyXRD/sync-COD**](https://github.com/PolyXRD/sync-COD)
-——只放数据侧工具（数据验收 3 个 + 与官方同步 10 个）和布局说明，数据同样不入库。
-数据完整性可以用它的 `tools/verify_data_root.py` 一次验 17 项。
+This directory also has its own repository: [**PolyXRD/sync-COD**](https://github.com/PolyXRD/sync-COD)
+— it contains only data-side tools (3 data-validation + 10 official-sync tools) and layout notes; the
+data is likewise not committed. Data integrity can be checked in one pass with its
+`tools/verify_data_root.py`, which verifies 17 items.
 
-换盘或换机器时用环境变量覆盖，不必改代码：
+When switching disks or machines, override with an environment variable; no need to change the code:
 
 ```bash
 export XRD_DATA_ROOT=/path/to/sync-COD
 ```
 
-生成清单（无机判定 + 统一编号 + 每文件一行）：
+Generate the manifest (inorganic classification + unified numbering + one line per file):
 
 ```bash
 python tools/scan_inorg.py --workers 6
 ```
 
-### 3.3 建库
+### 3.3 Building the databases
 
 ```bash
-python tools/build_polydb.py --scope inorg --workers 8     # → polydb/COD-Inorg-<今天>.polyDB
-python tools/build_polydb.py --scope full  --workers 8     # → polydb/COD-Full-<今天>.polyDB
+python tools/build_polydb.py --scope inorg --workers 8     # → polydb/COD-Inorg-<today>.polyDB
+python tools/build_polydb.py --scope full  --workers 8     # → polydb/COD-Full-<today>.polyDB
 
-# 其它来源库：--lib COD|PCOD|TCOD（缺省 COD，行为不变）+ --stamp 指定日期戳
+# Other source databases: --lib COD|PCOD|TCOD (default COD, behavior unchanged) + --stamp to specify the date stamp
 python tools/build_polydb.py --lib TCOD --scope full --stamp 20261020 --workers 4
 python tools/build_polydb.py --lib PCOD --scope inorg --stamp 20261020 --workers 4
 ```
 
-- 两阶段：并行切 unit（默认 2000 行/单元，已存在的 unit 自动跳过 → **断点续跑**）→ 串行合并写段。
-- `--limit N` / `--out PATH` 可先试产；`--force` 忽略旧 part 重算；
-  `--bins-only --out <现有库>` 只从 `peaks_d.f32` 重建 `bins.u8`（调 `--bins-top-m` 时秒级生效）。
-- 收尾会打印**条数守恒检查**：`清单 = 入库 + skip`，不平就报警（断点续跑留下陈旧 part 的典型症状）。
-- `--max-skip-ratio`（默认 0.20）：跳过率超限直接中止、拒绝出库 —— 防"散射因子表缺失导致
-  worker 吞异常、跑完出空壳库"那类事故。
-- parts 按 variant 分目录（`_polydb_parts/<lib>-<scope>/`），三库互不干扰。
+- Two phases: split units in parallel (default 2000 rows/unit, existing units are skipped
+  automatically → **resumable from breakpoints**) → serial merge writing segments.
+- `--limit N` / `--out PATH` for a trial build first; `--force` ignores old parts and recomputes;
+  `--bins-only --out <existing database>` rebuilds only `bins.u8` from `peaks_d.f32` (takes effect in
+  seconds when tuning `--bins-top-m`).
+- At the end it prints a **count-conservation check**: `manifest = ingested + skip`; if unbalanced it
+  raises an alarm (a typical symptom of stale parts left by a resumed run).
+- `--max-skip-ratio` (default 0.20): if the skip rate exceeds the limit it aborts immediately and
+  refuses to publish the database — preventing the class of accidents where "a missing
+  scattering-factor table makes a worker swallow the exception and the run finishes with an empty
+  shell database".
+- Parts are separated by variant into directories (`_polydb_parts/<lib>-<scope>/`), so the three
+  databases do not interfere with each other.
 
-### 3.4 实测工期（本机 4 核 / 机械盘 / COD 本机副本）
+### 3.4 Measured build times (this machine: 4 cores / mechanical disk / local COD copy)
 
-| 库 | 清单条数 | 入库 | skip | 分片阶段耗时 | 产物体积 |
+| Database | Manifest rows | Ingested | skip | Split-phase time | Artifact size |
 |---|---|---|---|---|---|
-| Inorg | 79,198 | 77,500 | 1,698（2.14%） | **531.7 s**（8 进程） | 85.8 MiB |
-| Full | 535,166 | 521,361 | 13,805（2.58%） | **18,176 s ≈ 5.05 h**（8 进程） | 1056.3 MiB |
+| Inorg | 79,198 | 77,500 | 1,698 (2.14%) | **531.7 s** (8 processes) | 85.8 MiB |
+| Full | 535,166 | 521,361 | 13,805 (2.58%) | **18,176 s ≈ 5.05 h** (8 processes) | 1056.3 MiB |
 
-skip 全部可分类：`no_sites`（无原子位点）、`no_pattern`（展开/计算异常）、
-`volume_too_large`（晶胞 > 30,000 Å³）、`no_volume`（无晶胞体积）。
+All skips are classifiable: `no_sites` (no atomic sites), `no_pattern` (expansion/calculation
+error), `volume_too_large` (cell > 30,000 Å³), `no_volume` (no cell volume).
 
-### 3.5 MP 库（Materials Project，2026-10-31 新增）
+### 3.5 MP database (Materials Project, added 2026-10-31)
 
 ```bash
-export XRD_MP_CIF_DIR=/path/to/mp_cif          # 默认 D:\Project\MP-summary\cif
-python tools/build_mp_polydb.py --workers 14 --out polydb/MP-<日期>.polyDB
-python tools/verify_mp_polydb.py polydb/MP-<日期>.polyDB --sample 100   # L3 精度层
+export XRD_MP_CIF_DIR=/path/to/mp_cif          # Default: D:\Project\MP-summary\cif
+python tools/build_mp_polydb.py --workers 14 --out polydb/MP-<date>.polyDB
+python tools/verify_mp_polydb.py polydb/MP-<date>.polyDB --sample 100   # L3 accuracy layer
 ```
 
-- MP CIF 是 pymatgen 的 **P1 原胞**：逐条做「原胞 → 常规胞 → 非对称单位」，
-  峰在常规胞上计算；三级回退 L0（真实 SG + 非对称单位）→ L1（常规胞全原子 + `P 1`）
-  → L2（原胞全原子 + `P 1`），汇总在 `meta.build.cell_representations`。
-- 断点续跑同上：`_mp_polydb_parts/<variant>/uNNNNN.*`，`--force` 重算。
-- 本机实测：155,204 相 / 179 MB / 14 进程约 60 min（其中 1 个双钙钛矿密集单元 15 min）。
-- `entries.eid` = MP 编号；`mvc-*` 条目落 9 亿号段；`tier=2`（理论）。
+- MP CIFs are pymatgen **P1 primitive cells**: each entry goes through "primitive cell →
+  conventional cell → asymmetric unit", and peaks are computed on the conventional cell; three-level
+  fallback L0 (real SG + asymmetric unit) → L1 (all conventional-cell atoms + `P 1`)
+  → L2 (all primitive-cell atoms + `P 1`), summarized in `meta.build.cell_representations`.
+- Resumable from breakpoints as above: `_mp_polydb_parts/<variant>/uNNNNN.*`, `--force` recomputes.
+- Measured on this machine: 155,204 phases / 179 MB / about 60 min with 14 processes (of which one
+  dense double-perovskite unit took 15 min).
+- `entries.eid` = MP number; `mvc-*` entries fall in the 900-million number range; `tier=2`
+  (theoretical).
 
 ---
 
-## 4. 校验
+## 4. Validation
 
 ```bash
-python tools/verify_polydb.py polydb/COD-Inorg-20261021.polyDB                # 含 sha256
-python tools/verify_polydb.py polydb/COD-Full-20261021.polyDB --no-hash       # 大库省时
-python tools/verify_mp_polydb.py polydb/MP-20261031.polyDB --sample 100       # MP：L3 回算
+python tools/verify_polydb.py polydb/COD-Inorg-20261021.polyDB                # with sha256
+python tools/verify_polydb.py polydb/COD-Full-20261021.polyDB --no-hash       # saves time on large databases
+python tools/verify_mp_polydb.py polydb/MP-20261031.polyDB --sample 100       # MP: L3 recomputation
 ```
 
-纯标准库实现，32 项硬判据：段齐全 / 字节数 / sha256 / 各段 shape 自洽 /
-`sites_off` 单调且末值 == `sites.bin` 长度（整除 17）/ `PRAGMA integrity_check` /
-`entries` 行数 == N / `row_idx` 是 0..N-1 的完整唯一排列 / 抽样行内按强度降序且空槽在尾部。
+Pure standard-library implementation, 32 hard criteria: all segments present / byte counts / sha256 /
+shapes of each segment self-consistent / `sites_off` monotonic with last value == `sites.bin` length
+(divisible by 17) / `PRAGMA integrity_check` / `entries` row count == N / `row_idx` is a complete
+unique permutation of 0..N-1 / sampled rows sorted by intensity descending with empty slots at the tail.
 
-两个发布库的实测结果：**各 32/32 PASS，0 WARN**；分发的 zip 与源目录逐文件 CRC32 + 字节数一致。
+Measured results for the two released databases: **32/32 PASS each, 0 WARN**; the distributed zips
+match the source directories file by file in CRC32 + byte count.
 
 ---
 
-## 5. 目录结构
+## 5. Directory structure
 
 ```
 .
-├── _atomic_scattering_params.json   Cromer-Mann 系数（pymatgen 同一份数据，99 元素）
-├── tools/                           只保留 polyDB 构建与产物验收，索引见 tools/README.md
-│   ├── build_polydb.py              polyDB 构建器（主入口）
-│   ├── scan_inorg.py                三库无机分类扫描 + 清单 inorg_manifest.sqlite
-│   ├── cif_common.py                共用纯函数（化学式/无机判定/晶胞体积/摩尔质量）
-│   ├── fastcif.py                   快速 CIF 解析 + 对称展开
-│   ├── fastxrd.py                   峰位/强度计算（无温度因子，pymatgen 口径）
-│   └── verify_polydb.py             polyDB 结构 32 项验收器
+├── _atomic_scattering_params.json   Cromer-Mann coefficients (same data as pymatgen, 99 elements)
+├── tools/                           only polyDB building and artifact validation, index in tools/README.md
+│   ├── build_polydb.py              polyDB builder (main entry point)
+│   ├── scan_inorg.py                inorganic-classification scan for the three databases + manifest inorg_manifest.sqlite
+│   ├── cif_common.py                shared pure functions (chemical formula / inorganic classification / cell volume / molar mass)
+│   ├── fastcif.py                   fast CIF parsing + symmetry expansion
+│   ├── fastxrd.py                   peak-position/intensity calculation (no temperature factor, pymatgen convention)
+│   └── verify_polydb.py             polyDB structure validator, 32 items
 └── docs/
-    ├── 外挂库格式规范-polyDB-v4.md   字段级规范（容器/峰口径/各段/reader 契约）
-    ├── polyDB重建方案-20261021.md   设计取舍、13 试样消融、A/B 比对
-    └── bench/                       建库报告与基准 JSON（含 Inorg 全链路实测）
+    ├── 外挂库格式规范-polyDB-v4.md   field-level specification (container / peak convention / segments / reader contract)
+    ├── polyDB重建方案-20261021.md   design trade-offs, 13-sample ablation, A/B comparison
+    └── bench/                       build reports and benchmark JSON (including full Inorg pipeline measurements)
 ```
 
-数据根另有自己的工具目录 `<数据根>/tools/`（**不在本仓库**）：数据验收 3 个
-（`verify_data_root` / `verify_inorg_copy` / `verify_coverage`）+ 同步 10 个（停用）。
-分界是"验数据"还是"验产物"——前者跟着数据走，后者跟着构建代码走。
+The data root also has its own tools directory `<data root>/tools/` (**not in this repository**):
+3 data-validation tools (`verify_data_root` / `verify_inorg_copy` / `verify_coverage`) + 10 sync
+tools (disabled). The dividing line is "validating data" vs "validating artifacts" — the former
+follows the data, the latter follows the build code.
 
-> **格式收敛（2026-10-23）**：数据库格式只保留两种 —— 本仓库的 **polyDB**（PolyXRD 外挂库）
-> 与 **xinDB**（XinMatch 原生库，见姊妹仓库
-> [XinMatch-DataBase](https://github.com/PolyXRD/XinMatch-DataBase)）。早期的 3COD `.sqlite`
-> 单体库及其打包规范、参考实现（原 `sync-COD-pack/`）**已废弃并从仓库移除**，不再维护、不再分发。
+> **Format consolidation (2026-10-23)**: only two database formats remain — this repository's
+> **polyDB** (PolyXRD external database) and **xinDB** (XinMatch's native database, see the sister
+> repository [XinMatch-DataBase](https://github.com/PolyXRD/XinMatch-DataBase)). The earlier 3COD
+> `.sqlite` monolithic database, its packaging specification and reference implementation
+> (formerly `sync-COD-pack/`) **have been deprecated and removed from the repository**; they are no
+> longer maintained or distributed.
 >
-> 2026-10-23 同时做了代码收敛：旧格式构建/验收机与一次性诊断脚本（50 个）已删除，
-> 只留 9 个脚本；需要考古时查 git 历史。
+> 2026-10-23 also saw a code consolidation: the old-format build/validation machine and one-off
+> diagnostic scripts (50) were deleted, leaving only 9 scripts; consult the git history if you need
+> to dig into the past.
 
-**数据不在仓库内**（`.gitignore` 也排除了 `COD/ PCOD/ TCOD/ inorg_cif/ inorg_manifest.sqlite`，
-以防有人误放回来）。仓库内唯一被忽略的产物目录是 `polydb/`。
+**The data is not in the repository** (`.gitignore` also excludes
+`COD/ PCOD/ TCOD/ inorg_cif/ inorg_manifest.sqlite`, to prevent anyone from accidentally putting it
+back). The only ignored artifact directory inside the repository is `polydb/`.
 
-> **xinDB 已迁出**（2026-10-23）：三个 `.xinDB` 从本仓库的 `xindb/` 移到姊妹仓库
-> [XinMatch-DataBase](https://github.com/PolyXRD/XinMatch-DataBase) 的 `data/`，
-> 构建代码与工具也一并归到那边。本仓库只负责 **polyDB**；源数据根
-> `D:/Project/XRD/sync-COD` 由两库共用、两个仓库都不包含它。
+> **xinDB has been moved out** (2026-10-23): the three `.xinDB` files were moved from this
+> repository's `xindb/` to the `data/` of the sister repository
+> [XinMatch-DataBase](https://github.com/PolyXRD/XinMatch-DataBase), and the build code and tools
+> moved there as well. This repository is responsible only for **polyDB**; the source data root
+> `D:/Project/XRD/sync-COD` is shared by both databases and is contained in neither repository.
 
 ---
 
-## 6. 已知缺口（20261021 版实测）
+## 6. Known gaps (measured on the 20261021 build)
 
-| 项 | 已发布两库的现状 | 影响 | 状态 |
+| Item | Current state of the two released databases | Impact | Status |
 |---|---|---|---|
-| `entries.density` | **两库 100% 为 NULL**（Inorg 0/77,500、Full 0/521,361） | PolyXRD 候选列表的"密度"列空白；不影响峰位/检索/精修 | **代码已修（2026-10-23）**：`build_dbs.py` 里 `formula_mass()` 根本不存在，异常被 `try/except` 吞掉后写 None。现已在 `cif_common.py` 补上 IUPAC 标准原子量表，实测 196 相切片填充率 94.4%（刚玉 Al₂O₃ 算得 3.98 g/cm³，实测 3.99）。**已发布产物未改动**（改了 sha256 就对不上），下次重建即正常 |
-| `entries.tier` / `dup_group` | 全为 0（未分层、未合并同相复本） | 检索结果里同一物相的多条复本都出现 | 未动，需按空间群+晶胞+元素做去重组 |
-| 峰计算 skip | Inorg 1,698 条（2.14%）、Full 13,805 条（2.58%） | 这些条目不进库（多为无原子位点 / 晶胞 > 30,000 Å³） | 已按原因分类记录在 `meta.build.skip_reasons`，可逐类评估 |
+| `entries.density` | **100% NULL in both databases** (Inorg 0/77,500, Full 0/521,361) | the "density" column in PolyXRD's candidate list is blank; does not affect peak positions / search / refinement | **Fixed in code (2026-10-23)**: `formula_mass()` in `build_dbs.py` did not exist at all; the exception was swallowed by `try/except` and wrote None. An IUPAC standard atomic-weight table has now been added in `cif_common.py`; measured fill rate on a 196-phase slice is 94.4% (corundum Al₂O₃ computed 3.98 g/cm³, measured 3.99). **Published artifacts unchanged** (changing them would break the sha256 match); the next rebuild will be normal |
+| `entries.tier` / `dup_group` | all 0 (no tiering, no merging of duplicate phases) | multiple duplicates of the same phase all appear in search results | untouched; needs phase de-duplication by space group + cell + elements |
+| Peak-calculation skip | Inorg 1,698 entries (2.14%), Full 13,805 entries (2.58%) | these entries are not ingested (mostly no atomic sites / cell > 30,000 Å³) | classified and recorded by cause in `meta.build.skip_reasons`, can be assessed cause by cause |
 
-## 7. 数据来源与许可
+## 7. Data sources and licensing
 
-- **代码**：沿 PolyXRD 的双许可（学术非商业 / 商业另议），见 `LICENSE`、`LICENSE-CN`。
-- **数据（COD）**：CIF 内容版权归 COD 及各原始文献作者。使用本仓库产物时请遵守
-  [COD 的使用条款](http://www.crystallography.net/cod/) 并引用 COD 与相应原始文献。
-  本仓库仅分发**派生索引**（峰位/强度/位点），不改写也不替代原始 CIF。
-- **数据（MP）**：Materials Project summary 数据以 CC BY 4.0 提供，使用时请引用
-  [Materials Project](https://materialsproject.org)（APL Materials 4, 053501 (2016)）。
-  `MP-20261031` 同为派生索引，条目可经 `entries.cif_rel` 追溯到源 CIF 文件名。
-- 峰位/强度为**计算值**（无温度因子、无仪器/样品展宽），与实验卡片（ICDD PDF）存在
-  系统性偏差（高角线偏强）。用于物相识别足够，用于定量须自行标定。
+- **Code**: follows PolyXRD's dual license (academic non-commercial / commercial by separate
+  agreement), see `LICENSE`, `LICENSE-CN`.
+- **Data (COD)**: CIF content copyright belongs to COD and the authors of the original literature.
+  When using this repository's artifacts, please comply with
+  [COD's terms of use](http://www.crystallography.net/cod/) and cite COD and the corresponding
+  original literature. This repository distributes only **derived indexes**
+  (peak positions/intensities/sites); it does not rewrite or replace the original CIFs.
+- **Data (MP)**: Materials Project summary data is provided under CC BY 4.0; when using it please
+  cite [Materials Project](https://materialsproject.org) (APL Materials 4, 053501 (2016)).
+  `MP-20261031` is likewise a derived index, and entries can be traced back to the source CIF file
+  name via `entries.cif_rel`.
+- Peak positions/intensities are **computed values** (no temperature factor, no
+  instrumental/sample broadening), and have systematic deviations from experimental cards
+  (ICDD PDF) (high-angle lines too strong). Sufficient for phase identification; for quantitative
+  analysis you must calibrate yourself.
 
-## 8. 版本
+## 8. Version history
 
-| 日期 | 事件 |
+| Date | Event |
 |---|---|
-| 2026-10-21 | polyDB v4 格式定稿；`COD-Inorg` / `COD-Full` 两库建成 |
-| 2026-10-23 | 本仓库建立并发布 `20261021` release（代码 + 两库 zip） |
-| 2026-10-23 | 格式收敛：移除旧 3COD `.sqlite` 打包规范与参考代码（`sync-COD-pack/`）；此后只保留 **polyDB** 与 **xinDB** |
-| 2026-10-23 | **源数据迁出仓库** → `D:/Project/XRD/sync-COD`（`COD/ PCOD/ TCOD/ inorg_cif/ inorg_manifest.sqlite`，两库共用），全部脚本改走 `XRD_DATA_ROOT` |
-| 2026-10-23 | **代码收敛**：`tools/` 从 92 个脚本收到 6 个，旧格式构建/验收与一次性诊断全部删除 |
-| 2026-10-23 | 同步 10 个 + 数据验收 3 个脚本移出仓库，落到 `<数据根>/tools/`（同步部分停用）；仓库只留构建链与产物验收 |
-| 2026-10-23 | 数据侧工具独立成公开仓库 [**PolyXRD/sync-COD**](https://github.com/PolyXRD/sync-COD)（数据仍不入库） |
-| 2026-10-23 | 补 `formula_mass()`（IUPAC 原子量），修好 `density` 全 NULL 缺陷（下次重建生效） |
-| 2026-10-31 | 新增 `tools/build_mp_polydb.py` / `verify_mp_polydb.py` / `cif_dir_to_polydb.py`：MP summary CIF → polyDB，L0/L1/L2 晶胞回退 |
-| 2026-10-31 | 发布 `20261031`：**MP** 库 155,204 相（106.5 MB zip），结构 32/32 PASS、L3 回算通过 |
+| 2026-10-21 | polyDB v4 format finalized; the `COD-Inorg` / `COD-Full` databases built |
+| 2026-10-23 | this repository created and the `20261021` release published (code + two database zips) |
+| 2026-10-23 | format consolidation: removed the old 3COD `.sqlite` packaging specification and reference code (`sync-COD-pack/`); from then on only **polyDB** and **xinDB** remain |
+| 2026-10-23 | **source data moved out of the repository** → `D:/Project/XRD/sync-COD` (`COD/ PCOD/ TCOD/ inorg_cif/ inorg_manifest.sqlite`, shared by both databases), all scripts switched to `XRD_DATA_ROOT` |
+| 2026-10-23 | **code consolidation**: `tools/` cut from 92 scripts to 6; old-format build/validation and one-off diagnostics all deleted |
+| 2026-10-23 | 10 sync + 3 data-validation scripts moved out of the repository into `<data root>/tools/` (sync part disabled); the repository keeps only the build chain and artifact validation |
+| 2026-10-23 | data-side tools spun off into the public repository [**PolyXRD/sync-COD**](https://github.com/PolyXRD/sync-COD) (data still not committed) |
+| 2026-10-23 | added `formula_mass()` (IUPAC atomic weights), fixing the all-NULL `density` defect (takes effect on the next rebuild) |
+| 2026-10-31 | added `tools/build_mp_polydb.py` / `verify_mp_polydb.py` / `cif_dir_to_polydb.py`: MP summary CIF → polyDB, L0/L1/L2 cell fallback |
+| 2026-10-31 | published `20261031`: **MP** database with 155,204 phases (106.5 MB zip), structure 32/32 PASS, L3 recomputation passed |
